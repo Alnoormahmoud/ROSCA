@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\FundMembers\" />
+    <Folder Include="DTOs\Funds\" />
+    <Folder Include="DTOs\Payouts\" />
+    <Folder Include="DTOs\Users\" />
+    <Folder Include="DTOs\Wallets\" />
+    <Folder Include="DTOs\WalletTransactions\" />
+    <Folder Include="Interfaces\FundMembers\" />
+    <Folder Include="Interfaces\Funds\" />
+    <Folder Include="Interfaces\Payouts\" />
+    <Folder Include="Interfaces\Users\" />
+    <Folder Include="Interfaces\Wallets\" />
+    <Folder Include="Interfaces\WalletTransactions\" />
+    <Folder Include="Services\FundMembers\" />
+    <Folder Include="Services\Funds\" />
+    <Folder Include="Services\Payouts\" />
+    <Folder Include="Services\Users\" />
+    <Folder Include="Services\Wallets\" />
+    <Folder Include="Services\WalletTransactions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ROSCA.Domain\ROSCA.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

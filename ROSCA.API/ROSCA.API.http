@@ -1,0 +1,6 @@
+@ROSCA.API_HostAddress = http://localhost:5248
+
+GET {{ROSCA.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

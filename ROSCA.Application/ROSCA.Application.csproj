@@ -10,7 +10,6 @@
     <Folder Include="DTOs\FundMembers\" />
     <Folder Include="DTOs\Funds\" />
     <Folder Include="DTOs\Payouts\" />
-    <Folder Include="DTOs\Users\" />
     <Folder Include="Interfaces\FundMembers\" />
     <Folder Include="Interfaces\Funds\" />
     <Folder Include="Interfaces\Payouts\" />

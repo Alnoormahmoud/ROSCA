@@ -15,6 +15,11 @@ namespace ROSCA.API.Controllers.WalletTransactions
     {
         IWalletTransactionService _TransactionService;
 
+        public WalletTransactionsController(IWalletTransactionService transactionService)
+        {
+            _TransactionService = transactionService;
+        }
+
         [HttpGet("GetById/{Id}", Name = "GetTransactionById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -11,6 +11,10 @@ namespace ROSCA.API.Controllers.Wallets
     {
         IWalletService _WalletService;
 
+        public WalletController(IWalletService WalletService)
+        {
+            _WalletService = WalletService;
+        }
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<WalletDTO>>> GetAllWallets()

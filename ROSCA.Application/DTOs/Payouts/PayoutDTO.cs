@@ -1,5 +1,5 @@
 ﻿using System;
-using ROSCA.Application.DTOs.Funds;
+using ROSCA.Application.DTOs.FundMembers;
 using ROSCA.Domain.Enums.Payouts;
 
 namespace ROSCA.Application.DTOs.Payouts
@@ -13,9 +13,6 @@ namespace ROSCA.Application.DTOs.Payouts
         public DateTime? CollectionDate { get; set; }
         public PayoutStatus Status { get; set; } = PayoutStatus.Disbursed;
 
-        public FundDTO Fund { get; set; } = new FundDTO();
-
-        // TODO: مطلوب كائن نقل بيانات المستخدم
-        // public User User { get; set; } = new User();
+        public FundMemberDTO Member { get; set; } = new FundMemberDTO();
     }
 }

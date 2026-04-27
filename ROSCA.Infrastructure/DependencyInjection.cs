@@ -20,6 +20,7 @@ namespace ROSCA.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connection)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connection));
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IFundRepository, FundRepository>();
             services.AddScoped<IFundMemberRepository, FundMemberRepository>();

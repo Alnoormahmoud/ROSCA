@@ -16,7 +16,6 @@
     <Folder Include="Services\FundMembers\" />
     <Folder Include="Services\Funds\" />
     <Folder Include="Services\Payouts\" />
-    <Folder Include="Services\Users\" />
   </ItemGroup>
 
   <ItemGroup>

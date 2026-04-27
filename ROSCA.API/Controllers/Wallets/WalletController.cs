@@ -64,11 +64,7 @@ namespace ROSCA.API.Controllers.Wallets
                 : CreatedAtRoute("GetByWalletId", new { id = NewId }, Created);
         }
 
-        [HttpPatch("Deposit")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-     
+       
 
         [HttpGet("AllCurrencies")]
         [ProducesResponseType(StatusCodes.Status200OK)]

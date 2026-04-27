@@ -18,7 +18,7 @@ namespace ROSCA.API.Controllers.WalletTransactions
         [HttpGet("GetById/{Id}", Name = "GetTransactionById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<WalletDTO>> GetWalletById(int Id)
+        public async Task<ActionResult<WalletDTO>> GetTransactionById(int Id)
         {
             var result = await _TransactionService.GetByIdAsync(Id);
 

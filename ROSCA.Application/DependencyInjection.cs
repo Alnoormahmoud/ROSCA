@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using ROSCA.Application.Interfaces.FundMembers;
 using ROSCA.Application.Interfaces.Funds;
@@ -8,8 +8,6 @@ using ROSCA.Application.Interfaces.WalletTransactions;
 using ROSCA.Application.Services.FundMembers;
 using ROSCA.Application.Services.Funds;
 using ROSCA.Application.Services.Payouts;
-using ROSCA.Application.Services.Wallets;
-using ROSCA.Application.Services.WalletTransactions;
 
 namespace ROSCA.Application
 {
@@ -22,7 +20,7 @@ namespace ROSCA.Application
             services.AddScoped<IPayoutService, PayoutService>();
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IWalletTransactionService, WalletTransactionService>();
-
+          
             return services;
         }
     }

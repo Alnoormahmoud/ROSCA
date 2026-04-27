@@ -5,7 +5,7 @@ using ROSCA.Infrastructure.Persistence;
 
 namespace ROSCA.Infrastructure
 {
-    public static class DependencyInjection
+    public static class DependencyInjection 
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connection)
         {

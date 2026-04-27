@@ -8,6 +8,7 @@ namespace ROSCA.Application.DTOs.Funds
     {
         public string Title { get; set; } = string.Empty;
         public int AdminId { get; set; }
+        public int CurrencyId { get; set; }
         public decimal ShareValue { get; set; }
         public PeriodType PeriodType { get; set; }
         public DateTime StartDate { get; set; }

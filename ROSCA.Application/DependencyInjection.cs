@@ -1,5 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ROSCA.Application.Interfaces.Users;
+using System;
 
 namespace ROSCA.Application
 {
@@ -7,6 +8,8 @@ namespace ROSCA.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
+            services.AddScoped<IUserService, UserService>();
+
             return services;
         }
     }

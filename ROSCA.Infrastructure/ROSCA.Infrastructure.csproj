@@ -10,6 +10,7 @@
     <Folder Include="Repositories\FundMembers\" />
     <Folder Include="Repositories\Funds\" />
     <Folder Include="Repositories\Payouts\" />
+    <Folder Include="Repositories\Users\" />
   </ItemGroup>
 
   <ItemGroup>

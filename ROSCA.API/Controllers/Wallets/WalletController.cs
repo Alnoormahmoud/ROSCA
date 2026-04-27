@@ -11,6 +11,10 @@ namespace ROSCA.API.Controllers.Wallets
     {
         IWalletService _WalletService;
 
+        public WalletController(IWalletService WalletService)
+        {
+            _WalletService = WalletService;
+        }
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<WalletDTO>>> GetAllWallets()
@@ -64,11 +68,7 @@ namespace ROSCA.API.Controllers.Wallets
                 : CreatedAtRoute("GetByWalletId", new { id = NewId }, Created);
         }
 
-        [HttpPatch("Deposit")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-     
+       
 
         [HttpGet("AllCurrencies")]
         [ProducesResponseType(StatusCodes.Status200OK)]

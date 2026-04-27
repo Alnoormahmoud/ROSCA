@@ -9,6 +9,7 @@ namespace ROSCA.Application.Interfaces.Payouts
     {
         Task<bool> UpdatePayoutStatusAsync(int payoutId, PayoutStatus status);
         Task<bool> RecordCollectionDateAsync(int payoutId, DateTime collectionDate);
+        Task<IEnumerable<Payout>> GetDuePayouts();
         public PayoutDTO MapToDTO(Payout payout);
     }
 }

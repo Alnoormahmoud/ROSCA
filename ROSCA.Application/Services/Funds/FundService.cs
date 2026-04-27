@@ -63,7 +63,7 @@ namespace ROSCA.Application.Services.Funds
                         AdminId = dto.AdminId,
                         ShareValue = dto.ShareValue,
                         PeriodType = dto.PeriodType,
-                        StartDate = dto.StartDate,
+                        StartDate = dto.StartDate.Date,
                         Status = FundStatus.Active,
                         CurrentRoundNumber = 1,
                         CreatedAt = DateTime.UtcNow
@@ -99,7 +99,7 @@ namespace ROSCA.Application.Services.Funds
                             RoundNumber = 1,
                             PayoutOrderInRound = fundMember.PayoutOrder,
                             Amount = fund.ShareValue * (dto.Members.Count - 1),
-                            DueDate = GetDueDate(fund, fundMember.PayoutOrder),
+                            DueDate = GetDueDate(fund, fundMember.PayoutOrder).Date,
                             CollectionDate = null,
                             Status = PayoutStatus.Disbursed
                         };
@@ -188,7 +188,7 @@ namespace ROSCA.Application.Services.Funds
                     fund.Title = dto.Title;
                     fund.ShareValue = dto.ShareValue;
                     fund.PeriodType = dto.PeriodType;
-                    fund.StartDate = dto.StartDate;
+                    fund.StartDate = dto.StartDate.Date;
                     fund.CurrentRoundNumber++;
 
                     if (!await _repo.UpdateAsync(fund))
@@ -209,7 +209,7 @@ namespace ROSCA.Application.Services.Funds
                             RoundNumber = fund.CurrentRoundNumber,
                             PayoutOrderInRound = member.NewPayoutOrder,
                             Amount = fund.ShareValue * (dto.Members.Count - 1),
-                            DueDate = GetDueDate(fund, member.NewPayoutOrder),
+                            DueDate = GetDueDate(fund, member.NewPayoutOrder).Date,
                             CollectionDate = null,
                             Status = PayoutStatus.Disbursed
                         };
@@ -254,7 +254,7 @@ namespace ROSCA.Application.Services.Funds
                 Title = fund.Title,
                 ShareValue = fund.ShareValue,
                 PeriodType = fund.PeriodType,
-                StartDate = fund.StartDate,
+                StartDate = fund.StartDate.Date,
                 Status = fund.Status,
                 CurrentRoundNumber = fund.CurrentRoundNumber,
                 Wallet = new WalletDTO

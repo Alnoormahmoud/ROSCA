@@ -54,6 +54,12 @@ namespace ROSCA.Application.Services.Payouts
                 .UpdateAsync(payout);
         }
 
+        public async Task<IEnumerable<Payout>> GetDuePayouts()
+        {
+            return await _repo
+                .GetDuePayouts();
+        }
+
         public PayoutDTO MapToDTO(Payout payout)
         {
             if (payout == null) return null!;

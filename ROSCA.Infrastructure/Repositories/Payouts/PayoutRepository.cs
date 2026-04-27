@@ -60,5 +60,14 @@ namespace ROSCA.Infrastructure.Repositories.Payouts
                 .SaveChangesAsync() > 0;
         }
 
+        public async Task<IEnumerable<Payout>> GetDuePayouts()
+        {
+            return await _context.Payouts
+                .Include(p => p.Member)
+                .Include(p => p.Transactions)
+                .Where(p => p.DueDate == DateTime.UtcNow.Date)
+                .ToListAsync();
+        }
+
     }
 }

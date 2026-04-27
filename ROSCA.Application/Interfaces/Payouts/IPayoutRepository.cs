@@ -9,5 +9,6 @@ namespace ROSCA.Application.Interfaces.Payouts
         Task<int> AddAsync(Payout payout);
         Task<IEnumerable<int>> AddRangeAsync(IEnumerable<Payout> payouts);
         Task<bool> UpdateAsync(Payout payout);
+        Task<IEnumerable<Payout>> GetDuePayouts();
     }
 }

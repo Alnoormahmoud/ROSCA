@@ -3,12 +3,12 @@ using System.ComponentModel;
 using System.Transactions;
 using ROSCA.Application.DTOs.FundMembers;
 using ROSCA.Application.DTOs.Funds;
-using ROSCA.Application.DTOs.Payouts;
 using ROSCA.Application.DTOs.Wallets;
 using ROSCA.Application.DTOs.WalletTransactions;
 using ROSCA.Application.Interfaces.FundMembers;
 using ROSCA.Application.Interfaces.Funds;
 using ROSCA.Application.Interfaces.Payouts;
+using ROSCA.Application.Interfaces.Wallets;
 using ROSCA.Domain.Entities.FundMembers;
 using ROSCA.Domain.Entities.Funds;
 using ROSCA.Domain.Entities.Payouts;
@@ -24,14 +24,26 @@ namespace ROSCA.Application.Services.Funds
         private readonly IFundMemberRepository _memberRepo;
         private readonly IFundMemberService _memberService;
         private readonly IPayoutService _payoutService;
+        private readonly IWalletService _walletService;
 
-        public FundService(IFundRepository repo, IPayoutRepository payoutRepo, IFundMemberRepository memberRepo, IFundMemberService memberService, IPayoutService payoutService)
+        public async Task<FundDTO?> GetByIdAsync(int id)
+        {
+            var fund = await _repo
+                .GetByIdAsync(id);
+
+            return fund is null
+                ? null
+                : MapToDTO(fund);
+        }
+
+        public FundService(IFundRepository repo, IPayoutRepository payoutRepo, IFundMemberRepository memberRepo, IFundMemberService memberService, IPayoutService payoutService, IWalletService walletService)
         {
             _repo = repo;
             _payoutRepo = payoutRepo;
             _memberRepo = memberRepo;
             _memberService = memberService;
             _payoutService = payoutService;
+            _walletService = walletService;
         }
 
         public async Task<int> CreateFundAsync(FundToAddDTO dto)
@@ -51,7 +63,7 @@ namespace ROSCA.Application.Services.Funds
                         AdminId = dto.AdminId,
                         ShareValue = dto.ShareValue,
                         PeriodType = dto.PeriodType,
-                        StartDate = dto.StartDate,
+                        StartDate = dto.StartDate.Date,
                         Status = FundStatus.Active,
                         CurrentRoundNumber = 1,
                         CreatedAt = DateTime.UtcNow
@@ -87,10 +99,15 @@ namespace ROSCA.Application.Services.Funds
                             RoundNumber = 1,
                             PayoutOrderInRound = fundMember.PayoutOrder,
                             Amount = fund.ShareValue * (dto.Members.Count - 1),
-                            DueDate = GetDueDate(fund, fundMember.PayoutOrder),
+                            DueDate = GetDueDate(fund, fundMember.PayoutOrder).Date,
                             CollectionDate = null,
                             Status = PayoutStatus.Disbursed
                         };
+
+                        if (payout.PayoutOrderInRound == 1)
+                        {
+                            payout.Status = PayoutStatus.Pending;
+                        }
 
                         await _payoutRepo.AddAsync(payout);
 
@@ -100,8 +117,20 @@ namespace ROSCA.Application.Services.Funds
                         }
                     }
 
-                    // TODO: إنشاء محفظة للصندوق
-                    // في إنتظار واجهة مستودع المحافظ
+                    var walletId = await _walletService
+                        .AddAsync(
+                            new WalletToAddDTO
+                            {
+                                FundId = fund.Id,
+                                CurrencyId = dto.CurrencyId,
+                                Balance = 0
+                            }
+                        );
+
+                    if (walletId is null)
+                    {
+                        return -1;
+                    }
 
                     transaction.Complete();
 
@@ -129,18 +158,23 @@ namespace ROSCA.Application.Services.Funds
                 .UpdateAsync(fund);
         }
 
-        public async Task<bool> GenerateNewRoundAsync(FundToUpdateDTO dto, ICollection<FundMemberToUpdatePayoutOrderDTO> members)
+        public async Task<bool> GenerateNewRoundAsync(FundToUpdateDTO dto)
         {
             var fund = await _repo
                 .GetByIdAsync(dto.Id);
 
-            if (fund is null)
+            if (fund is null || fund.Status != FundStatus.Completed)
             {
                 return false;
             }
 
-            var originalMemberIds = fund.Members.Select(m => m.Id).ToHashSet();
-            var commingMemberIds = members.Select(m => m.Id).ToHashSet();
+            var originalMemberIds = fund.Members
+                .Select(m => m.Id)
+                .ToHashSet();
+
+            var commingMemberIds = dto.Members
+                .Select(m => m.Id)
+                .ToHashSet();
 
             if (!originalMemberIds.SetEquals(commingMemberIds))
             {
@@ -154,7 +188,7 @@ namespace ROSCA.Application.Services.Funds
                     fund.Title = dto.Title;
                     fund.ShareValue = dto.ShareValue;
                     fund.PeriodType = dto.PeriodType;
-                    fund.StartDate = dto.StartDate;
+                    fund.StartDate = dto.StartDate.Date;
                     fund.CurrentRoundNumber++;
 
                     if (!await _repo.UpdateAsync(fund))
@@ -162,7 +196,7 @@ namespace ROSCA.Application.Services.Funds
                         return false;
                     }
 
-                    foreach (var member in members)
+                    foreach (var member in dto.Members)
                     {
                         if (!await _memberService.UpdatePayoutOrderAsync(member))
                         {
@@ -174,8 +208,8 @@ namespace ROSCA.Application.Services.Funds
                             FundMemberId = member.Id,
                             RoundNumber = fund.CurrentRoundNumber,
                             PayoutOrderInRound = member.NewPayoutOrder,
-                            Amount = fund.ShareValue * (members.Count - 1),
-                            DueDate = GetDueDate(fund, member.NewPayoutOrder),
+                            Amount = fund.ShareValue * (dto.Members.Count - 1),
+                            DueDate = GetDueDate(fund, member.NewPayoutOrder).Date,
                             CollectionDate = null,
                             Status = PayoutStatus.Disbursed
                         };
@@ -220,7 +254,7 @@ namespace ROSCA.Application.Services.Funds
                 Title = fund.Title,
                 ShareValue = fund.ShareValue,
                 PeriodType = fund.PeriodType,
-                StartDate = fund.StartDate,
+                StartDate = fund.StartDate.Date,
                 Status = fund.Status,
                 CurrentRoundNumber = fund.CurrentRoundNumber,
                 Wallet = new WalletDTO

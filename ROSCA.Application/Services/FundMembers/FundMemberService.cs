@@ -1,6 +1,5 @@
 ﻿using System;
 using ROSCA.Application.DTOs.FundMembers;
-using ROSCA.Application.DTOs.Funds;
 using ROSCA.Application.Interfaces.FundMembers;
 using ROSCA.Domain.Entities.FundMembers;
 

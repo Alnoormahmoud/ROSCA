@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Funds\" />
     <Folder Include="Controllers\FundMembers\" />
     <Folder Include="Controllers\WalletTransactions\" />
     <Folder Include="Controllers\Wallets\" />

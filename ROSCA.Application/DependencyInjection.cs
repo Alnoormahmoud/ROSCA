@@ -8,6 +8,8 @@ using ROSCA.Application.Interfaces.WalletTransactions;
 using ROSCA.Application.Services.FundMembers;
 using ROSCA.Application.Services.Funds;
 using ROSCA.Application.Services.Payouts;
+using ROSCA.Application.Services.Wallets;
+using ROSCA.Application.Services.WalletTransactions;
 
 namespace ROSCA.Application
 {

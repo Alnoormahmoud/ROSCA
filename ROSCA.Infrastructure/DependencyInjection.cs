@@ -7,12 +7,11 @@ using ROSCA.Infrastructure.Persistence;
 using ROSCA.Application.Interfaces.FundMembers;
 using ROSCA.Application.Interfaces.Funds;
 using ROSCA.Application.Interfaces.Payouts;
-using ROSCA.Application.Interfaces.Wallets;
-using ROSCA.Application.Interfaces.WalletTransactions;
-using ROSCA.Infrastructure.Persistence;
 using ROSCA.Infrastructure.Repositories.FundMembers;
 using ROSCA.Infrastructure.Repositories.Funds;
 using ROSCA.Infrastructure.Repositories.Payouts;
+using ROSCA.Infrastructure.Repositories.Wallets;
+using ROSCA.Infrastructure.Repositories.WalletTransactions;
 
 namespace ROSCA.Infrastructure
 {

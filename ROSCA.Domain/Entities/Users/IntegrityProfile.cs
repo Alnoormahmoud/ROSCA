@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ROSCA.Application.DTOs.Users
+namespace ROSCA.Domain.Entities.Users
 {
-    public class IntegrityProfileDTO
+    public class IntegrityProfile
     {
+        public int UserId { get; set; } 
         public int TotalRequired { get; set; }
         public int TotalPaid { get; set; }
         public int OnTimePayments { get; set; }
@@ -15,6 +16,6 @@ namespace ROSCA.Application.DTOs.Users
         public int MissingPayments { get; set; }
         public double CommitmentRate { get; set; }
         public Decimal RawScore { get; set; }
-        public string Level { get; set; } = string.Empty;
+        public string Level { get; set; }
     }
 }

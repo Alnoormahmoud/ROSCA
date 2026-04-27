@@ -12,6 +12,7 @@ using ROSCA.Infrastructure.Repositories.Funds;
 using ROSCA.Infrastructure.Repositories.Payouts;
 using ROSCA.Infrastructure.Repositories.Wallets;
 using ROSCA.Infrastructure.Repositories.WalletTransactions;
+using ROSCA.Application.Interfaces.Users;
 
 namespace ROSCA.Infrastructure
 {

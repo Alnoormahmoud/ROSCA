@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ROSCA.Application.Interfaces.FundMembers;
 using ROSCA.Application.Interfaces.Funds;
 using ROSCA.Application.Interfaces.Payouts;
+using ROSCA.Application.Interfaces.Users;
 using ROSCA.Application.Interfaces.Wallets;
 using ROSCA.Application.Interfaces.WalletTransactions;
 using ROSCA.Application.Services.FundMembers;
@@ -17,6 +18,7 @@ namespace ROSCA.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFundService, FundService>();
             services.AddScoped<IFundMemberService, FundMemberService>();
             services.AddScoped<IPayoutService, PayoutService>();

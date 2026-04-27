@@ -15,7 +15,17 @@ public class UserService : IUserService
         _repo = repo;
     }
 
- 
+     public async Task<User?> LoginAsync(string username, string password)
+    {
+        var user = await _repo.GetByUsernameAsync(username);
+
+        if (user == null || user.Password != password)
+        {
+            return null; // Login failed
+        }
+
+        return user;
+    }
 
     public async Task<UserDTO?> GetByIdAsync(int id)
     {

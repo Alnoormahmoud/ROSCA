@@ -20,5 +20,6 @@ namespace ROSCA.Application.Interfaces.Users
         Task<bool> ExistsAsync(string username, string nationalId);
 
         Task<User?> GetUserWithFinancialDataAsync(int userId);
-    }
+ 
+     }
 }

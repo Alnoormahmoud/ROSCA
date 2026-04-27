@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Repositories\Users\" />
-    <Folder Include="Repositories\Wallets\" />
-    <Folder Include="Repositories\WalletTransactions\" />
   </ItemGroup>
 
   <ItemGroup>

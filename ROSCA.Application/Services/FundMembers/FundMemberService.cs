@@ -1,6 +1,8 @@
 ﻿using System;
 using ROSCA.Application.DTOs.FundMembers;
+using ROSCA.Application.DTOs.Funds;
 using ROSCA.Application.Interfaces.FundMembers;
+using ROSCA.Domain.Entities.FundMembers;
 
 namespace ROSCA.Application.Services.FundMembers
 {
@@ -27,6 +29,20 @@ namespace ROSCA.Application.Services.FundMembers
 
             return await _repo
                 .UpdateAsync(member);
+        }
+
+        public FundMemberDTO MapToDTO(FundMember member)
+        {
+            if (member == null) return null!;
+
+            return new FundMemberDTO
+            {
+                Id = member.Id,
+                PayoutOrder = member.PayoutOrder,
+                CreatedAt = member.CreatedAt,
+                FundId = member.FundId,
+                UserId = member.UserId
+            };
         }
 
     }

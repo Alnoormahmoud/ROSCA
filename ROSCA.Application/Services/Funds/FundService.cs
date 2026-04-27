@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.Transactions;
 using ROSCA.Application.DTOs.FundMembers;
 using ROSCA.Application.DTOs.Funds;
+using ROSCA.Application.DTOs.Payouts;
+using ROSCA.Application.DTOs.Wallets;
+using ROSCA.Application.DTOs.WalletTransactions;
 using ROSCA.Application.Interfaces.FundMembers;
 using ROSCA.Application.Interfaces.Funds;
 using ROSCA.Application.Interfaces.Payouts;
@@ -20,13 +23,15 @@ namespace ROSCA.Application.Services.Funds
         private readonly IPayoutRepository _payoutRepo;
         private readonly IFundMemberRepository _memberRepo;
         private readonly IFundMemberService _memberService;
+        private readonly IPayoutService _payoutService;
 
-        public FundService(IFundRepository repo, IPayoutRepository payoutRepo, IFundMemberRepository memberRepo, IFundMemberService memberService)
+        public FundService(IFundRepository repo, IPayoutRepository payoutRepo, IFundMemberRepository memberRepo, IFundMemberService memberService, IPayoutService payoutService)
         {
             _repo = repo;
             _payoutRepo = payoutRepo;
             _memberRepo = memberRepo;
             _memberService = memberService;
+            _payoutService = payoutService;
         }
 
         public async Task<int> CreateFundAsync(FundToAddDTO dto)
@@ -202,6 +207,47 @@ namespace ROSCA.Application.Services.Funds
                 PeriodType.Weekly => fund.StartDate.AddDays(offset * 7),
                 PeriodType.Monthly => fund.StartDate.AddMonths(offset),
                 _ => throw new InvalidEnumArgumentException()
+            };
+        }
+
+        public FundDTO MapToDTO(Fund fund)
+        {
+            if (fund == null) return null!;
+
+            return new FundDTO
+            {
+                Id = fund.Id,
+                Title = fund.Title,
+                ShareValue = fund.ShareValue,
+                PeriodType = fund.PeriodType,
+                StartDate = fund.StartDate,
+                Status = fund.Status,
+                CurrentRoundNumber = fund.CurrentRoundNumber,
+                Wallet = new WalletDTO
+                {
+                    Id = fund.Wallet.Id,
+                    Balance = fund.Wallet.Balance,
+                    FundId = fund.Wallet.Id,
+                    CurrencyCode = fund.Wallet.Currency.Code,
+                    Transactions = fund.Wallet.Transactions
+                        .Select(t => new WalletTransactionDTO
+                        {
+                            Id = t.Id,
+                            WalletId = t.WalletId,
+                            UserId = t.UserId,
+                            PayoutId = t.PayoutId,
+                            Amount = t.Amount,
+                            Type = t.Type,
+                            PaymentDate = t.PaymentDate,
+                        }).ToList()
+                },
+                Members = fund.Members
+                    .Select(m => _memberService.MapToDTO(m))
+                    .ToList(),
+                Payouts = fund.Payouts
+                    .Select(p => _payoutService.MapToDTO(p))
+                    .ToList(),
+                CreatedAt = fund.CreatedAt
             };
         }
 

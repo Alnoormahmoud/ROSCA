@@ -10,16 +10,21 @@
     <Folder Include="DTOs\Users\" />
     <Folder Include="DTOs\Wallets\" />
     <Folder Include="DTOs\WalletTransactions\" />
+    <Folder Include="Interfaces\FundMembers\" />
+    <Folder Include="Interfaces\Funds\" />
+    <Folder Include="Interfaces\Payouts\" />
     <Folder Include="Interfaces\Users\" />
     <Folder Include="Interfaces\Wallets\" />
     <Folder Include="Interfaces\WalletTransactions\" />
+    <Folder Include="Services\FundMembers\" />
+    <Folder Include="Services\Funds\" />
+    <Folder Include="Services\Payouts\" />
     <Folder Include="Services\Users\" />
-    <Folder Include="Services\Wallets\" />
-    <Folder Include="Services\WalletTransactions\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,7 +14,6 @@
     <Folder Include="Interfaces\FundMembers\" />
     <Folder Include="Interfaces\Funds\" />
     <Folder Include="Interfaces\Payouts\" />
-    <Folder Include="Interfaces\Users\" />
     <Folder Include="Services\FundMembers\" />
     <Folder Include="Services\Funds\" />
     <Folder Include="Services\Payouts\" />

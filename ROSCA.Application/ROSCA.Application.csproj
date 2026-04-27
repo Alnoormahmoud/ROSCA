@@ -7,14 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\FundMembers\" />
-    <Folder Include="DTOs\Funds\" />
-    <Folder Include="DTOs\Payouts\" />
     <Folder Include="DTOs\Users\" />
+    <Folder Include="DTOs\Wallets\" />
+    <Folder Include="DTOs\WalletTransactions\" />
     <Folder Include="Interfaces\FundMembers\" />
     <Folder Include="Interfaces\Funds\" />
     <Folder Include="Interfaces\Payouts\" />
     <Folder Include="Interfaces\Users\" />
+    <Folder Include="Interfaces\Wallets\" />
+    <Folder Include="Interfaces\WalletTransactions\" />
     <Folder Include="Services\FundMembers\" />
     <Folder Include="Services\Funds\" />
     <Folder Include="Services\Payouts\" />

@@ -16,7 +16,8 @@ namespace ROSCA.Domain.Entities.Funds
         public PeriodType PeriodType { get; set; }
         public DateTime StartDate { get; set; }
         public FundStatus Status { get; set; } = FundStatus.Active;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public int CurrentRoundNumber { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual User Admin { get; set; } = new User();
         public virtual Wallet Wallet { get; set; } = new Wallet();

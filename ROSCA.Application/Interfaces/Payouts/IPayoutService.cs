@@ -1,4 +1,6 @@
 ﻿using System;
+using ROSCA.Application.DTOs.Payouts;
+using ROSCA.Domain.Entities.Payouts;
 using ROSCA.Domain.Enums.Payouts;
 
 namespace ROSCA.Application.Interfaces.Payouts
@@ -7,5 +9,6 @@ namespace ROSCA.Application.Interfaces.Payouts
     {
         Task<bool> UpdatePayoutStatusAsync(int payoutId, PayoutStatus status);
         Task<bool> RecordCollectionDateAsync(int payoutId, DateTime collectionDate);
+        public PayoutDTO MapToDTO(Payout payout);
     }
 }

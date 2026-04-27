@@ -7,9 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\FundMembers\" />
-    <Folder Include="Repositories\Funds\" />
-    <Folder Include="Repositories\Payouts\" />
     <Folder Include="Repositories\Users\" />
     <Folder Include="Repositories\Wallets\" />
     <Folder Include="Repositories\WalletTransactions\" />

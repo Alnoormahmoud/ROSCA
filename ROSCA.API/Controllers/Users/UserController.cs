@@ -58,8 +58,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    // This endpoint is currently not used by the frontend, but it's essential for internal operations like financial assessments and integrity scoring. We keep it here for future use and to maintain a clear separation of concerns in our API design.
-
+    // will be implemented in the future when we have financial data to return
     //[HttpGet("{id:int}/financial")]
     //[ProducesResponseType(StatusCodes.Status200OK)]
     //[ProducesResponseType(StatusCodes.Status400BadRequest)]

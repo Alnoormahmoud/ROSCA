@@ -22,10 +22,18 @@ namespace ROSCA.Infrastructure.Persistence
 
         override protected void OnModelCreating(ModelBuilder modelBuilder)
         {
+       
             base.OnModelCreating(modelBuilder);
-            base.OnModelCreating(modelBuilder);
+ 
+       
 
-            // 1. Configure the View mapping
+            // 2. Explicitly define the One-to-One relationship
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Profile)
+                .WithOne() // No navigation property back to User inside IntegrityProfile
+                .HasForeignKey<IntegrityProfile>(p => p.UserId) // Use the existing UserId
+                .IsRequired(false); // Since it's a View, it might be null if no data exists
+
             modelBuilder.Entity<IntegrityProfile>(entity =>
             {
                 entity.ToView("IntegrityProfiles"); // Use your actual SQL View name

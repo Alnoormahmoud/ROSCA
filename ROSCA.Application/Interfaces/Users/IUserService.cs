@@ -18,7 +18,7 @@ namespace ROSCA.Application.Interfaces.Users
         Task<UserDTO?> GetByUsernameAsync(string username);
         Task<bool> ExistsAsync(string username, string nationalId);
         Task<UserDTO?> GetUserWithFinancialDataAsync(int userId);
-        Task<User?> LoginAsync(string username, string password);
+        Task<UserDTO?> LoginAsync(string username, string password);
 
     }
 }

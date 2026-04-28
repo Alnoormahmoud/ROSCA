@@ -19,7 +19,7 @@ namespace ROSCA.Application.Interfaces.Wallets
 
         public Task<bool> DepositAsync(int WalletId, decimal Amount);
 
-        public Task<bool> WithdrawAsync(int WalletId, decimal Amount);
+        public Task<bool> PayPayoutAsync(int WalletId);
 
         public Task<IEnumerable<string>> GetAllCurrenciesCodesAsync();
     }

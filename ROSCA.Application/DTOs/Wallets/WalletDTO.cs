@@ -9,10 +9,10 @@ namespace ROSCA.Application.DTOs.Wallets
 {
     public class WalletDTO
     {
-        public int Id { get; set; }
+        public int WalletId { get; set; }
         public int FundId { get; set; }
         public decimal Balance { get; set; }
-        public string CurrencyCode { get; set; } = string.Empty;
+        public string CurrencyCode { get; set; } = null!;
 
         public IEnumerable<WalletTransactionDTO> Transactions { get; set; } = new List<WalletTransactionDTO>();
 

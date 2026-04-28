@@ -1,11 +1,13 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using ROSCA.Application.Interfaces.FundMembers;
 using ROSCA.Application.Interfaces.Funds;
 using ROSCA.Application.Interfaces.Payouts;
 using ROSCA.Application.Interfaces.Users;
 using ROSCA.Application.Interfaces.Wallets;
 using ROSCA.Application.Interfaces.WalletTransactions;
+using ROSCA.Application.Services.BackgroundServices;
 using ROSCA.Application.Services.FundMembers;
 using ROSCA.Application.Services.Funds;
 using ROSCA.Application.Services.Payouts;
@@ -24,6 +26,7 @@ namespace ROSCA.Application
             services.AddScoped<IPayoutService, PayoutService>();
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IWalletTransactionService, WalletTransactionService>();
+            services.AddHostedService<PayoutBackgroundService>();
           
             return services;
         }

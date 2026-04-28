@@ -10,9 +10,10 @@ namespace ROSCA.Application.Interfaces.WalletTransactions
 {
     public interface IWalletTransactionService
     {
-        public Task<int?> AddContributionTransactionAsync(ContributionToAddDTO Transaction);
+        public Task<int?> AddPayoutTransactionAsync(PayoutTransactionToAddDTO dto);
+        public Task<int?> AddContributionTransactionAsync(ContributionToAddDTO dto);
         public Task<WalletTransactionDTO?> GetByIdAsync(int Id);
 
-        public Task<IEnumerable<WalletTransactionDTO>> GetAllAsync();
+        public Task<IEnumerable<WalletTransactionDTO>> GetAllAsync(TransactionsFilterDTO dto);
     }
 }

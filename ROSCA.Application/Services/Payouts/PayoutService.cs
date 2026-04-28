@@ -99,7 +99,7 @@ namespace ROSCA.Application.Services.Payouts
                 Transactions = payout.Transactions
                     .Select(t => new WalletTransactionDTO
                     {
-                        Id = t.Id,
+                        TransactionId = t.Id,
                         WalletId = t.WalletId,
                         UserId = t.UserId,  
                         PayoutId = t.PayoutId,

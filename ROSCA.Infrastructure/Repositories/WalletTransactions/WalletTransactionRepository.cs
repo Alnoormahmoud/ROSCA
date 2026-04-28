@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ROSCA.Application.DTOs.WalletTransactions;
 using ROSCA.Application.Interfaces.WalletTransactions;
 using ROSCA.Domain.Entities.WalletTransactions;
 using ROSCA.Infrastructure.Persistence;
@@ -28,9 +29,20 @@ namespace ROSCA.Infrastructure.Repositories.WalletTransactions
        
         }
 
-        public async Task<IEnumerable<Domain.Entities.WalletTransactions.WalletTransaction>> GetAll()
+        public async Task<IEnumerable<Domain.Entities.WalletTransactions.WalletTransaction>> GetAll(TransactionsFilterDTO dto)
         {
-            return await _Context.WalletTransactions
+            var Query = _Context.WalletTransactions.Where(x => x.User.Username == dto.UserName);
+            if (dto.WalletId != null)
+            {
+                Query.Where(x => x.WalletId == dto.WalletId);
+            }
+
+            if (dto.TransactionType != null)
+            {
+                Query.Where(x => x.Type == dto.TransactionType);
+            }
+               
+            return await Query
                   .Include(x => x.User)
                   .Include(x => x.Wallet)
                   .Include(x => x.Payout)

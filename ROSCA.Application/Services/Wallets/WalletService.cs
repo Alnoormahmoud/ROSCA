@@ -63,19 +63,14 @@ namespace ROSCA.Application.Services.Wallets
         }
   
 
-        public async Task<bool> WithdrawAsync(int WalletId, decimal Amount)
+        public async Task<bool> PayPayoutAsync(int WalletId)
         {
             var Wallet = await _Repo.GetByIdAsync(WalletId);
 
             if (Wallet is null)
                 return false; //wallet is not found
 
-            if (Wallet.Balance < Amount)
-                return false; //Failed: Amount is greater than balance
-
-            Wallet.Balance -= Amount;
-
-            return await _Repo.UpdateBalanceAsync(WalletId, Wallet.Balance);
+            return await _Repo.UpdateBalanceAsync(WalletId, 0 );
         }
 
         public async Task<IEnumerable<string>> GetAllCurrenciesCodesAsync()
@@ -94,7 +89,7 @@ namespace ROSCA.Application.Services.Wallets
         {
             return new WalletDTO()
             {
-                Id = wallet.Id,
+                WalletId = wallet.Id,
                 FundId = wallet.FundId,
                 CurrencyCode = wallet.Currency.Code,
                 Balance = wallet.Balance,

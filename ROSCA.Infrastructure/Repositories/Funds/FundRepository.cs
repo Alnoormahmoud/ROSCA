@@ -25,6 +25,16 @@ namespace ROSCA.Infrastructure.Repositories.Funds
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
+        public Fund? GetById(int id)
+        {
+            return _context.Funds
+                .Include(f => f.Wallet)
+                .Include(f => f.Admin)
+                .Include(f => f.Members)
+                .Include(f => f.Payouts)
+                .FirstOrDefault(f => f.Id == id);
+        }
+
         public async Task<int> AddAsync(Fund fund)
         {
             if (fund is null) return -1;
@@ -45,6 +55,15 @@ namespace ROSCA.Infrastructure.Repositories.Funds
 
             return await _context
                 .SaveChangesAsync() > 0;
+        }
+
+        public bool Update(Fund fund)
+        {
+            _context.Funds
+                .Update(fund);
+
+            return _context
+                .SaveChanges() > 0;
         }
 
     }

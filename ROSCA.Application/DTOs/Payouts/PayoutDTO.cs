@@ -14,6 +14,7 @@ namespace ROSCA.Application.DTOs.Payouts
         public DateTime DueDate { get; set; }
         public DateTime? CollectionDate { get; set; }
         public PayoutStatus Status { get; set; } = PayoutStatus.Disbursed;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public FundMemberDTO Member { get; set; } = new FundMemberDTO();
         public ICollection<WalletTransactionDTO> Transactions { get; set; } = new List<WalletTransactionDTO>();

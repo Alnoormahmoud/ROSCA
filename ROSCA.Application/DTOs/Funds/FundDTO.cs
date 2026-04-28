@@ -10,7 +10,9 @@ namespace ROSCA.Application.DTOs.Funds
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int AdminId { get; set; }
+        public int TotalMembers { get; set; }
         public decimal ShareValue { get; set; }
         public PeriodType PeriodType { get; set; }
         public DateTime StartDate { get; set; } = DateTime.UtcNow;

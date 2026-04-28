@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Transactions;
 using ROSCA.Application.DTOs.FundMembers;
 using ROSCA.Application.DTOs.Funds;
@@ -44,6 +45,8 @@ namespace ROSCA.Application.Services.Funds
             _memberService = memberService;
             _payoutService = payoutService;
             _walletService = walletService;
+
+            _payoutService.LastPayoutCollected += PayoutService_LastPayoutCollected;
         }
 
         public async Task<int> CreateFundAsync(FundToAddDTO dto)
@@ -63,6 +66,7 @@ namespace ROSCA.Application.Services.Funds
                         AdminId = dto.AdminId,
                         ShareValue = dto.ShareValue,
                         PeriodType = dto.PeriodType,
+                        TotalMembers = dto.Members.Count,
                         StartDate = dto.StartDate.Date,
                         Status = FundStatus.Active,
                         CurrentRoundNumber = 1,
@@ -103,11 +107,6 @@ namespace ROSCA.Application.Services.Funds
                             CollectionDate = null,
                             Status = PayoutStatus.Disbursed
                         };
-
-                        if (payout.PayoutOrderInRound == 1)
-                        {
-                            payout.Status = PayoutStatus.Pending;
-                        }
 
                         await _payoutRepo.AddAsync(payout);
 
@@ -156,6 +155,22 @@ namespace ROSCA.Application.Services.Funds
 
             return await _repo
                 .UpdateAsync(fund);
+        }
+
+        public bool CompleteFund(int fundId)
+        {
+            var fund = _repo
+                .GetById(fundId);
+
+            if (fund is null)
+            {
+                return false;
+            }
+
+            fund.Status = FundStatus.Completed;
+
+            return _repo
+                .Update(fund);
         }
 
         public async Task<bool> GenerateNewRoundAsync(FundToUpdateDTO dto)
@@ -242,6 +257,14 @@ namespace ROSCA.Application.Services.Funds
                 PeriodType.Monthly => fund.StartDate.AddMonths(offset),
                 _ => throw new InvalidEnumArgumentException()
             };
+        }
+
+        private void PayoutService_LastPayoutCollected(object? sender, Payouts.LastPayoutCollectedEventArgs e)
+        {
+            if (!CompleteFund(e.FundId))
+            {
+                throw new InvalidOperationException("فشلت عملية تغيير حالة الصندوق لمكتمل");
+            }
         }
 
         public FundDTO MapToDTO(Fund fund)

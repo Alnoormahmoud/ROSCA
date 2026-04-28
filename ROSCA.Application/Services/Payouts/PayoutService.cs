@@ -99,7 +99,7 @@ namespace ROSCA.Application.Services.Payouts
                 Transactions = payout.Transactions
                     .Select(t => new WalletTransactionDTO
                     {
-                        Id = t.Id,
+                        TransactionId = t.Id,
                         WalletId = t.WalletId,
                         UserId = t.UserId,  
                         PayoutId = t.PayoutId,
@@ -125,7 +125,7 @@ namespace ROSCA.Application.Services.Payouts
                     var fund = payout.Member.Fund;
 
                     var nextOrder = payout.PayoutOrderInRound + 1;
-                    var nextPayout = fund.Payouts
+                    var nextPayout = fund.Members.SelectMany(m => m.Payouts)
                         .FirstOrDefault(p => p.RoundNumber == fund.CurrentRoundNumber
                                           && p.PayoutOrderInRound == nextOrder);
 

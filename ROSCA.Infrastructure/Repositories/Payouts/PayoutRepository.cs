@@ -19,6 +19,7 @@ namespace ROSCA.Infrastructure.Repositories.Payouts
         {
             return await _context.Payouts
                 .Include(p => p.Member)
+                    .ThenInclude(m => m.Fund)
                 .Include(p => p.Transactions)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -64,6 +65,7 @@ namespace ROSCA.Infrastructure.Repositories.Payouts
         {
             return await _context.Payouts
                 .Include(p => p.Member)
+                    .ThenInclude(m => m.Fund)
                 .Include(p => p.Transactions)
                 .Where(p => p.DueDate == DateTime.UtcNow.Date)
                 .ToListAsync();

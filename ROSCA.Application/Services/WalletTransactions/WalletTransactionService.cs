@@ -21,7 +21,40 @@ namespace ROSCA.Application.Services.WalletTransactions
             _WalletService = walletService;
         }
 
-        //TODO: Add Payout from wallet logic
+        public async Task<int?> AddPayoutTransactionAsync(PayoutTransactionToAddDTO dto)
+        {
+            int? NewID = null;
+            var Wallet = await _WalletService.GetByIdAsync(dto.WalletId);
+            if (Wallet == null) 
+                return null; //wallet is not found
+
+            var WalletTransaction = new WalletTransaction();
+            WalletTransaction.WalletId = dto.WalletId;
+            WalletTransaction.UserId = dto.UserId;
+            WalletTransaction.PayoutId = dto.PayoutId;
+            WalletTransaction.Amount = Wallet.Balance;
+            WalletTransaction.Type = Domain.Enums.WalletTransactions.TransactionType.Payout;
+            WalletTransaction.PaymentDate = DateTime.Now;
+
+            using (TransactionScope transactionScope = new TransactionScope())
+            {
+                try
+                {
+                    NewID = await _TransactionRepo.Add(WalletTransaction);
+
+                    await _WalletService.PayPayoutAsync(WalletTransaction.WalletId);
+
+                    transactionScope.Complete();
+                }
+                catch (Exception ex)
+                {
+                    NewID = null;
+                }
+
+            }
+
+            return NewID;
+        }
         public async Task<int?> AddContributionTransactionAsync(ContributionToAddDTO dto)
         {
             int? NewID = null;
@@ -53,9 +86,9 @@ namespace ROSCA.Application.Services.WalletTransactions
             return NewID;
         }
 
-        public async Task<IEnumerable<WalletTransactionDTO>> GetAllAsync()
+        public async Task<IEnumerable<WalletTransactionDTO>> GetAllAsync(TransactionsFilterDTO dto)
         {
-            return MapToDTOs(await _TransactionRepo.GetAll());
+            return MapToDTOs(await _TransactionRepo.GetAll(dto));
         }
 
         public async Task<WalletTransactionDTO?> GetByIdAsync(int Id)
@@ -71,7 +104,7 @@ namespace ROSCA.Application.Services.WalletTransactions
         {
             return new WalletTransactionDTO()
             {
-                Id = Transaction.Id,
+                TransactionId = Transaction.Id,
                 WalletId = Transaction.WalletId,
                 UserId = Transaction.UserId,
                 PayoutId = Transaction.PayoutId,
@@ -90,6 +123,7 @@ namespace ROSCA.Application.Services.WalletTransactions
             }
             return DTOs;
         }
-    
+
+      
     }
 }

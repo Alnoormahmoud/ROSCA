@@ -20,7 +20,7 @@ namespace ROSCA.Domain.Entities.Users
         // Navigation Property to the View
         public virtual IntegrityProfile Profile { get; set; }
 
-        public virtual ICollection<Fund> ManagedFunds { get; set; } = new List<Fund>();
+       
         public virtual ICollection<FundMember> Memberships { get; set; } = new List<FundMember>();
         public virtual ICollection<WalletTransaction> Transactions { get; set; } = new List<WalletTransaction>();
         public virtual ICollection<Payout> Payouts { get; set; } = new List<Payout>();

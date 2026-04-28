@@ -15,7 +15,7 @@ public class UserService : IUserService
         _repo = repo;
     }
 
-     public async Task<User?> LoginAsync(string username, string password)
+     public async Task<UserDTO?> LoginAsync(string username, string password)
     {
         var user = await _repo.GetByUsernameAsync(username);
 
@@ -24,7 +24,7 @@ public class UserService : IUserService
             return null; // Login failed
         }
 
-        return user;
+        return MapToDetailsDTO(user);
     }
 
     public async Task<UserDTO?> GetByIdAsync(int id)
@@ -58,10 +58,11 @@ public class UserService : IUserService
 
     public async Task<UserDTO?> GetUserWithFinancialDataAsync(int userId)
     {
+        // 1. Fetch user with all necessary includes from Repository
         var user = await _repo.GetUserWithFinancialDataAsync(userId);
         if (user == null) return null;
 
-        return new UserDTO 
+        return new UserDTO
         {
             Id = user.Id,
             FullName = user.FullName,
@@ -70,35 +71,55 @@ public class UserService : IUserService
             BankAccount = user.BankAccount,
             CreatedAt = user.CreatedAt,
 
-            Profile = MapProfile(user.Profile),
+            // 2. Map the SQL View (Integrity Profile)
+            Profile = user.Profile != null ? new IntegrityProfileDTO
+            {
+                TotalRequired = user.Profile.TotalRequired,
+                TotalPaid = user.Profile.TotalPaid,
+                MissingPayments = user.Profile.MissingPayments,
+                CommitmentRate = user.Profile.CommitmentRate,
+                RawScore = user.Profile.RawScore,
+                Level = user.Profile.Level
+            } : null,
 
-            //this will be used in the future when we want to show the user their financial data on the dashboard, for now we will just return the profile data
+            // 3. Map Memberships (Where they are participants)
+            Memberships = user.Memberships.Select(m => new FundMemberDTO
+            {
+                Id = m.Id,
+                UserId = m.UserId,
+                FundId = m.FundId,
+                PayoutOrder = m.PayoutOrder,
+                CreatedAt = m.CreatedAt
+            }).ToList(),
 
-            //Memberships = user.Memberships.Select(m => new FundMemberDTO
-            //{
-            //    UserId = m.UserId,
-            //    FullName = user.FullName,
-            //    HasPaid = m.HasPaid
-            //}).ToList(),
+            // 4. Map Wallet Transactions (Payment History)
+            Transactions = user.Transactions.Select(t => new WalletTransactionDTO
+            {
+                Id = t.Id,
+                WalletId = t.WalletId,
+                UserId = t.UserId,
+                PayoutId = t.PayoutId,
+                Amount = t.Amount,
+                Type = t.Type,
+                PaymentDate = t.PaymentDate
+            }).OrderByDescending(t => t.PaymentDate).ToList(), // Clean History: Newest first
 
-            //Transactions = user.Transactions.Select(t => new WalletTransactionDTO
-            //{
-            //    Id = t.Id,
-            //    Amount = t.Amount,
-            //    Type = t.Type,
-            //    Date = t.Date
-            //}).ToList(),
-
-            //Payouts = user.Payouts.Select(p => new PayoutDTO
-            //{
-            //    Id = p.Id,
-            //    Amount = p.Amount,
-            //    PayoutDate = p.PayoutDate
-            //}).ToList()
+            // 5. Map Payouts (Scheduled/Received Funds)
+            Payouts = user.Payouts.Select(p => new PayoutDTO
+            {
+                Id = p.Id,
+                RoundNumber = p.RoundNumber,
+                PayoutOrderInRound = p.PayoutOrderInRound,
+                Amount = p.Amount,
+                DueDate = p.DueDate,
+                CollectionDate = p.CollectionDate,
+                Status = p.Status,
+                CreatedAt = p.CreatedAt
+            }).OrderBy(p => p.DueDate).ToList() // Scheduled: Oldest/Next due first
         };
     }
 
- 
+
     public async Task<int> AddAsync(UserToAddDTO dto)
     {
         var exists = await _repo.ExistsAsync(dto.Username, dto.NationalId);
@@ -128,6 +149,7 @@ public class UserService : IUserService
 
         user.FullName = dto.FullName;
         user.BankAccount = dto.BankAccount;
+        user.Username = dto.Username;
 
         return await _repo.UpdateAsync(user);
     }

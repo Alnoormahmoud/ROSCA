@@ -15,7 +15,7 @@ namespace ROSCA.Domain.Entities.Users
         public int LatePaymentsCount { get; set; }
         public int MissingPayments { get; set; }
         public double CommitmentRate { get; set; }
-        public Decimal RawScore { get; set; }
+        public double RawScore { get; set; }
         public string Level { get; set; }
     }
 }

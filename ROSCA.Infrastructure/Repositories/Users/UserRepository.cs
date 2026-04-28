@@ -78,7 +78,7 @@ public class UserRepository : IUserRepository
     public async Task<bool> ExistsAsync(string username, string nationalId)
     {
         return await _context.Users
-            .AnyAsync(u => u.Username == username || u.NationalId == nationalId);
+            .AnyAsync(u => u.Username == username && u.NationalId == nationalId);
     }
 
   

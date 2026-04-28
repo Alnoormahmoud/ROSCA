@@ -125,7 +125,7 @@ namespace ROSCA.Application.Services.Payouts
                     var fund = payout.Member.Fund;
 
                     var nextOrder = payout.PayoutOrderInRound + 1;
-                    var nextPayout = fund.Payouts
+                    var nextPayout = fund.Members.SelectMany(m => m.Payouts)
                         .FirstOrDefault(p => p.RoundNumber == fund.CurrentRoundNumber
                                           && p.PayoutOrderInRound == nextOrder);
 

@@ -24,6 +24,5 @@ namespace ROSCA.Domain.Entities.Funds
         public virtual User Admin { get; set; } = new User();
         public virtual Wallet Wallet { get; set; } = new Wallet();
         public virtual ICollection<FundMember> Members { get; set; } = new List<FundMember>();
-        public virtual ICollection<Payout> Payouts { get; set; } = new List<Payout>();
     }
 }

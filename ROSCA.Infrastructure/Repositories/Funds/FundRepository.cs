@@ -21,7 +21,7 @@ namespace ROSCA.Infrastructure.Repositories.Funds
                 .Include(f => f.Wallet)
                 .Include(f => f.Admin)
                 .Include(f => f.Members)
-                .Include(f => f.Payouts)
+                    .ThenInclude(m => m.Payouts)
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
@@ -31,7 +31,8 @@ namespace ROSCA.Infrastructure.Repositories.Funds
                 .Include(f => f.Wallet)
                 .Include(f => f.Admin)
                 .Include(f => f.Members)
-                .Include(f => f.Payouts)
+                .Include(f => f.Members)
+                    .ThenInclude(m => m.Payouts)
                 .FirstOrDefault(f => f.Id == id);
         }
 

@@ -301,7 +301,8 @@ namespace ROSCA.Application.Services.Funds
                 Members = fund.Members
                     .Select(m => _memberService.MapToDTO(m))
                     .ToList(),
-                Payouts = fund.Payouts
+                Payouts = fund.Members
+                    .SelectMany(m => m.Payouts)
                     .Select(p => _payoutService.MapToDTO(p))
                     .ToList(),
                 CreatedAt = fund.CreatedAt

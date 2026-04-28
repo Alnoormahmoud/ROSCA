@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="DTOs\Users\" />
     <Folder Include="DTOs\Wallets\" />
-    <Folder Include="DTOs\WalletTransactions\" />
     <Folder Include="Interfaces\FundMembers\" />
     <Folder Include="Interfaces\Funds\" />
     <Folder Include="Interfaces\Payouts\" />

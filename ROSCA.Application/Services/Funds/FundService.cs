@@ -282,14 +282,14 @@ namespace ROSCA.Application.Services.Funds
                 CurrentRoundNumber = fund.CurrentRoundNumber,
                 Wallet = new WalletDTO
                 {
-                    Id = fund.Wallet.Id,
+                    WalletId = fund.Wallet.Id,
                     Balance = fund.Wallet.Balance,
                     FundId = fund.Wallet.Id,
                     CurrencyCode = fund.Wallet.Currency.Code,
                     Transactions = fund.Wallet.Transactions
                         .Select(t => new WalletTransactionDTO
                         {
-                            Id = t.Id,
+                            TransactionId = t.Id,
                             WalletId = t.WalletId,
                             UserId = t.UserId,
                             PayoutId = t.PayoutId,

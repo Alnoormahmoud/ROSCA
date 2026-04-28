@@ -32,17 +32,17 @@ namespace ROSCA.API.Controllers.WalletTransactions
                  : Ok(result);
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet("GetAllFiltered")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<WalletDTO>>> GetAllTransactions()
+        public async Task<ActionResult<IEnumerable<WalletDTO>>> GetAllTransactions([FromQuery]TransactionsFilterDTO dto)
         {
             //add filter
-            var result = await _TransactionService.GetAllAsync();
+            var result = await _TransactionService.GetAllAsync(dto);
             return Ok(result);
         }
 
 
-        [HttpPost("AddNew")]
+        [HttpPost("AddContribution")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

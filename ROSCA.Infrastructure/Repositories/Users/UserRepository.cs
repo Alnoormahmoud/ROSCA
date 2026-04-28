@@ -11,17 +11,47 @@ public class UserRepository : IUserRepository
     {
         _context = context;
     }
- 
+
     public async Task<User?> GetByIdAsync(int id)
     {
         return await _context.Users
+            .Include(u => u.Profile) // Added: Get score when looking up by ID
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task<List<User>> GetAllAsync()
     {
-        return await _context.Users.ToListAsync();
+        return await _context.Users
+            .Include(u => u.Profile) // Already correctly added
+            .ToListAsync();
     }
+
+    public async Task<User?> GetByUsernameAsync(string username)
+    {
+        return await _context.Users
+            .Include(u => u.Profile) // Added: Get score during login/auth lookups
+            .FirstOrDefaultAsync(u => u.Username == username);
+    }
+
+    public async Task<User?> GetUserWithFinancialDataAsync(int userId)
+    {
+        return await _context.Users
+            .Include(u => u.Profile) // Added: Essential for financial decision making
+            .Include(u => u.Memberships)
+                .ThenInclude(fm => fm.Fund)
+            .Include(u => u.Transactions)
+            .Include(u => u.Payouts)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+    }
+
+    public async Task<User?> GetUserWithProfileAsync(int userId)
+    {
+        return await _context.Users
+            .Include(u => u.Profile)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+    }
+
+    // --- Write Operations (Profile is read-only from the view, so no changes needed here) ---
 
     public async Task<int> AddAsync(User user)
     {
@@ -45,30 +75,12 @@ public class UserRepository : IUserRepository
         return await _context.SaveChangesAsync() > 0;
     }
 
- 
-    public async Task<User?> GetByUsernameAsync(string username)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Username == username);
-    }
-
     public async Task<bool> ExistsAsync(string username, string nationalId)
     {
         return await _context.Users
             .AnyAsync(u => u.Username == username || u.NationalId == nationalId);
     }
 
- 
-    public async Task<User?> GetUserWithFinancialDataAsync(int userId)
-    {
-        return await _context.Users
-            .Include(u => u.Memberships)
-                .ThenInclude(fm => fm.Fund)
-
-            .Include(u => u.Transactions)
-
-            .Include(u => u.Payouts)
-
-            .FirstOrDefaultAsync(u => u.Id == userId);
-    }
+  
+  
 }

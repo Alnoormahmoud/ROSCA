@@ -16,7 +16,6 @@
     <Folder Include="Controllers\WalletTransactions\" />
     <Folder Include="Controllers\Wallets\" />
     <Folder Include="Controllers\Payouts\" />
-    <Folder Include="Controllers\Users\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "صرفة"
+version = "1.0.0"
+id = "artifacts/money-saver"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23960
+
+[services.development]
+run = "pnpm --filter @workspace/money-saver run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/money-saver", "run", "build" ]
+publicDir = "artifacts/money-saver/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23960"
+BASE_PATH = "/"

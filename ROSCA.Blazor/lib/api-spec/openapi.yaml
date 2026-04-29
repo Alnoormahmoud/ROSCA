@@ -1,0 +1,950 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: Auth
+    description: Browser and mobile authentication endpoints.
+  - name: Profile
+    description: User profile (KYC info, bank account, etc.)
+  - name: Funds
+    description: Savings group ("fund") management
+  - name: Members
+    description: Fund membership management
+  - name: Payouts
+    description: Scheduled payout rounds
+  - name: Wallets
+    description: Per-fund wallets and transactions
+  - name: Dashboard
+    description: Aggregated dashboard data
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/user:
+    get:
+      tags: [Auth]
+      operationId: getCurrentAuthUser
+      summary: Get the currently authenticated user
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+        - $ref: '#/components/parameters/SessionCookie'
+      responses:
+        '200':
+          description: Auth status resolved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUserEnvelope'
+  /login:
+    get:
+      tags: [Auth]
+      operationId: beginBrowserLogin
+      summary: Start the browser OIDC login flow
+      parameters:
+        - name: returnTo
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to the OIDC authorization endpoint.
+  /callback:
+    get:
+      tags: [Auth]
+      operationId: handleBrowserLoginCallback
+      summary: Complete the browser OIDC login flow
+      parameters:
+        - name: code
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: iss
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+      responses:
+        '302':
+          description: Redirect after browser login.
+  /logout:
+    get:
+      tags: [Auth]
+      operationId: logoutBrowserSession
+      summary: Clear the session and begin OIDC logout
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+        - $ref: '#/components/parameters/SessionCookie'
+      responses:
+        '302':
+          description: Redirect to the OIDC provider logout URL.
+  /mobile-auth/token-exchange:
+    post:
+      tags: [Auth]
+      operationId: exchangeMobileAuthorizationCode
+      summary: Exchange a mobile OIDC code for a session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileTokenExchangeRequest'
+      responses:
+        '200':
+          description: Session created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileTokenExchangeSuccess'
+        '400':
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Token did not contain usable claims.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Token exchange failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /mobile-auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logoutMobileSession
+      summary: Delete a mobile session token
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+      responses:
+        '200':
+          description: Logout processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutSuccess'
+
+  /profile:
+    get:
+      tags: [Profile]
+      operationId: getMyProfile
+      summary: Get my full profile (KYC + auth info)
+      responses:
+        '200':
+          description: Profile loaded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileEnvelope'
+    put:
+      tags: [Profile]
+      operationId: updateMyProfile
+      summary: Update my profile (KYC fields)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileBody'
+      responses:
+        '200':
+          description: Profile updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /profile/onboarding-complete:
+    post:
+      tags: [Profile]
+      operationId: completeOnboarding
+      summary: Mark onboarding as complete
+      responses:
+        '200':
+          description: Onboarding marked complete.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileEnvelope'
+
+  /users/{userId}:
+    get:
+      tags: [Profile]
+      operationId: getUserPublicInfo
+      summary: Get a user's public profile info
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User public info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUserEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /currencies:
+    get:
+      tags: [Funds]
+      operationId: listCurrencies
+      summary: List supported currencies
+      responses:
+        '200':
+          description: Currencies.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [currencies]
+                properties:
+                  currencies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Currency'
+
+  /funds:
+    get:
+      tags: [Funds]
+      operationId: listMyFunds
+      summary: List funds I belong to
+      responses:
+        '200':
+          description: My funds.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [funds]
+                properties:
+                  funds:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FundSummary'
+    post:
+      tags: [Funds]
+      operationId: createFund
+      summary: Create a new savings group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewFund'
+      responses:
+        '201':
+          description: Fund created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundEnvelope'
+
+  /funds/discover:
+    get:
+      tags: [Funds]
+      operationId: discoverFunds
+      summary: Discover open funds I can join
+      responses:
+        '200':
+          description: Discoverable funds.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [funds]
+                properties:
+                  funds:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FundSummary'
+
+  /funds/{fundId}:
+    get:
+      tags: [Funds]
+      operationId: getFund
+      summary: Get fund details
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Fund details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundDetailEnvelope'
+
+  /funds/{fundId}/join:
+    post:
+      tags: [Members]
+      operationId: joinFund
+      summary: Join a fund as a member
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Joined.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundDetailEnvelope'
+
+  /funds/{fundId}/leave:
+    post:
+      tags: [Members]
+      operationId: leaveFund
+      summary: Leave a pending fund
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Left.
+
+  /funds/{fundId}/members:
+    get:
+      tags: [Members]
+      operationId: listFundMembers
+      summary: List members of a fund
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Members.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [members]
+                properties:
+                  members:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FundMember'
+
+  /funds/{fundId}/payouts:
+    get:
+      tags: [Payouts]
+      operationId: listFundPayouts
+      summary: List payouts for a fund
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payouts.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [payouts]
+                properties:
+                  payouts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Payout'
+
+  /payouts/{payoutId}/contribute:
+    post:
+      tags: [Payouts]
+      operationId: contributeToPayout
+      summary: Pay your share for the current round
+      parameters:
+        - name: payoutId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contribution recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayoutEnvelope'
+
+  /payouts/{payoutId}/collect:
+    post:
+      tags: [Payouts]
+      operationId: collectPayout
+      summary: Collect the pot for your turn (recipient only)
+      parameters:
+        - name: payoutId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pot collected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayoutEnvelope'
+
+  /funds/{fundId}/wallet:
+    get:
+      tags: [Wallets]
+      operationId: getFundWallet
+      summary: Get wallet for a fund
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Wallet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletEnvelope'
+
+  /funds/{fundId}/wallet/transactions:
+    get:
+      tags: [Wallets]
+      operationId: listWalletTransactions
+      summary: List wallet transactions for a fund
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transactions.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [transactions]
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WalletTransaction'
+
+  /dashboard/summary:
+    get:
+      tags: [Dashboard]
+      operationId: getDashboardSummary
+      summary: My personal dashboard summary
+      responses:
+        '200':
+          description: Dashboard data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+
+  /dashboard/activity:
+    get:
+      tags: [Dashboard]
+      operationId: getRecentActivity
+      summary: Recent transaction activity across my funds
+      responses:
+        '200':
+          description: Recent activity feed.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [activity]
+                properties:
+                  activity:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActivityItem'
+
+components:
+  parameters:
+    AuthorizationSessionHeader:
+      name: Authorization
+      in: header
+      required: false
+      description: Opaque session token — `Bearer <sid>`.
+      schema:
+        type: string
+    SessionCookie:
+      name: sid
+      in: cookie
+      required: false
+      description: Browser session cookie.
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: Not authenticated.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    AuthUser:
+      type: object
+      required: [id, email, firstName, lastName, profileImageUrl]
+      properties:
+        id:
+          type: string
+        email:
+          type: [string, 'null']
+          format: email
+        firstName:
+          type: [string, 'null']
+        lastName:
+          type: [string, 'null']
+        profileImageUrl:
+          type: [string, 'null']
+    AuthUserEnvelope:
+      type: object
+      required: [user]
+      properties:
+        user:
+          oneOf:
+            - $ref: '#/components/schemas/AuthUser'
+            - type: 'null'
+    MobileTokenExchangeRequest:
+      type: object
+      required: [code, code_verifier, redirect_uri, state]
+      properties:
+        code:
+          type: string
+          minLength: 1
+        code_verifier:
+          type: string
+          minLength: 1
+        redirect_uri:
+          type: string
+          minLength: 1
+          format: uri
+        state:
+          type: string
+          minLength: 1
+        nonce:
+          type: string
+          minLength: 1
+    MobileTokenExchangeSuccess:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+    LogoutSuccess:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          const: true
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    Profile:
+      type: object
+      required: [id, email, fullName, username, nationalId, bankAccount, profileImageUrl, onboardingComplete, createdAt]
+      properties:
+        id:
+          type: string
+        email:
+          type: [string, 'null']
+        fullName:
+          type: [string, 'null']
+        username:
+          type: [string, 'null']
+        nationalId:
+          type: [string, 'null']
+        bankAccount:
+          type: [string, 'null']
+        profileImageUrl:
+          type: [string, 'null']
+        onboardingComplete:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    ProfileEnvelope:
+      type: object
+      required: [profile]
+      properties:
+        profile:
+          $ref: '#/components/schemas/Profile'
+    PublicUser:
+      type: object
+      required: [id, fullName, username, profileImageUrl, joinedAt]
+      properties:
+        id:
+          type: string
+        fullName:
+          type: [string, 'null']
+        username:
+          type: [string, 'null']
+        profileImageUrl:
+          type: [string, 'null']
+        joinedAt:
+          type: string
+          format: date-time
+    PublicUserEnvelope:
+      type: object
+      required: [user]
+      properties:
+        user:
+          $ref: '#/components/schemas/PublicUser'
+    UpdateProfileBody:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        username:
+          type: string
+          minLength: 2
+          maxLength: 64
+        nationalId:
+          type: string
+          minLength: 4
+          maxLength: 64
+        bankAccount:
+          type: string
+          minLength: 4
+          maxLength: 64
+
+    Currency:
+      type: object
+      required: [id, code]
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+
+    FundStatus:
+      type: string
+      enum: [pending, active, completed]
+    FundPeriodType:
+      type: string
+      enum: [weekly, biweekly, monthly]
+    PayoutStatus:
+      type: string
+      enum: [upcoming, collecting, paid, overdue]
+
+    NewFund:
+      type: object
+      required: [title, shareValue, periodType, startDate, currencyId, memberUserIds]
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 120
+        shareValue:
+          type: number
+          exclusiveMinimum: 0
+        periodType:
+          $ref: '#/components/schemas/FundPeriodType'
+        startDate:
+          type: string
+          format: date
+        currencyId:
+          type: integer
+        memberUserIds:
+          type: array
+          minItems: 2
+          maxItems: 30
+          items:
+            type: string
+          description: |
+            Ordered list of user ids. The first id MUST be the creator (admin),
+            and the position of each id determines that member's payout order
+            (index 0 receives round 1, index 1 receives round 2, etc.).
+            Members and order are LOCKED at creation and cannot be changed.
+        description:
+          type: string
+          maxLength: 500
+
+    FundSummary:
+      type: object
+      required: [id, title, adminId, shareValue, periodType, startDate, status, totalMembers, currentMembers, currencyCode, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: [string, 'null']
+        adminId:
+          type: string
+        shareValue:
+          type: number
+        periodType:
+          $ref: '#/components/schemas/FundPeriodType'
+        startDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/FundStatus'
+        totalMembers:
+          type: integer
+        currentMembers:
+          type: integer
+        currencyCode:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    FundDetail:
+      allOf:
+        - $ref: '#/components/schemas/FundSummary'
+        - type: object
+          required: [members, payouts, wallet, isMember, isAdmin]
+          properties:
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/FundMember'
+            payouts:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payout'
+            wallet:
+              $ref: '#/components/schemas/Wallet'
+            isMember:
+              type: boolean
+            isAdmin:
+              type: boolean
+
+    FundEnvelope:
+      type: object
+      required: [fund]
+      properties:
+        fund:
+          $ref: '#/components/schemas/FundSummary'
+
+    FundDetailEnvelope:
+      type: object
+      required: [fund]
+      properties:
+        fund:
+          $ref: '#/components/schemas/FundDetail'
+
+    FundMember:
+      type: object
+      required: [id, userId, fundId, payoutOrder, fullName, username, profileImageUrl, createdAt]
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        fundId:
+          type: string
+        payoutOrder:
+          type: [integer, 'null']
+        fullName:
+          type: [string, 'null']
+        username:
+          type: [string, 'null']
+        profileImageUrl:
+          type: [string, 'null']
+        createdAt:
+          type: string
+          format: date-time
+
+    Payout:
+      type: object
+      required: [id, fundId, userId, roundNumber, payoutOrderInRound, dueDate, collectionDate, status, amount, recipientFullName, contributedCount, totalContributors, hasContributed]
+      properties:
+        id:
+          type: string
+        fundId:
+          type: string
+        userId:
+          type: string
+        roundNumber:
+          type: integer
+        payoutOrderInRound:
+          type: integer
+        dueDate:
+          type: string
+          format: date
+        collectionDate:
+          type: [string, 'null']
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PayoutStatus'
+        amount:
+          type: number
+        recipientFullName:
+          type: [string, 'null']
+        recipientUsername:
+          type: [string, 'null']
+        contributedCount:
+          type: integer
+        totalContributors:
+          type: integer
+        hasContributed:
+          type: boolean
+
+    PayoutEnvelope:
+      type: object
+      required: [payout]
+      properties:
+        payout:
+          $ref: '#/components/schemas/Payout'
+
+    Wallet:
+      type: object
+      required: [id, fundId, balance, currencyId, currencyCode]
+      properties:
+        id:
+          type: string
+        fundId:
+          type: string
+        balance:
+          type: number
+        currencyId:
+          type: integer
+        currencyCode:
+          type: string
+
+    WalletEnvelope:
+      type: object
+      required: [wallet]
+      properties:
+        wallet:
+          $ref: '#/components/schemas/Wallet'
+
+    WalletTransaction:
+      type: object
+      required: [id, walletId, userId, payoutId, amount, type, paymentDate, userFullName]
+      properties:
+        id:
+          type: string
+        walletId:
+          type: string
+        userId:
+          type: string
+        payoutId:
+          type: [string, 'null']
+        amount:
+          type: number
+        type:
+          type: string
+          enum: [contribution, payout]
+        paymentDate:
+          type: string
+          format: date-time
+        userFullName:
+          type: [string, 'null']
+
+    DashboardSummary:
+      type: object
+      required: [totalSaved, activeFunds, upcomingPayoutAmount, nextPayout, dueThisCycle]
+      properties:
+        totalSaved:
+          type: number
+        activeFunds:
+          type: integer
+        upcomingPayoutAmount:
+          type: number
+        nextPayout:
+          oneOf:
+            - $ref: '#/components/schemas/Payout'
+            - type: 'null'
+        dueThisCycle:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payout'
+
+    ActivityItem:
+      type: object
+      required: [id, fundId, fundTitle, type, amount, userFullName, paymentDate]
+      properties:
+        id:
+          type: string
+        fundId:
+          type: string
+        fundTitle:
+          type: string
+        type:
+          type: string
+          enum: [contribution, payout]
+        amount:
+          type: number
+        userFullName:
+          type: [string, 'null']
+        paymentDate:
+          type: string
+          format: date-time

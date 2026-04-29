@@ -40,8 +40,7 @@ public class UserRepository : IUserRepository
             .Include(u => u.Memberships)
                 .ThenInclude(fm => fm.Fund)
             .Include(u => u.Transactions)
-            .Include(u => u.Payouts)
-            .FirstOrDefaultAsync(u => u.Id == userId);
+             .FirstOrDefaultAsync(u => u.Id == userId);
     }
 
     public async Task<User?> GetUserWithProfileAsync(int userId)

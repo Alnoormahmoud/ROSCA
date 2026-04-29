@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using ROSCA.Application.DTOs.FundMembers;
 using ROSCA.Application.DTOs.Users;
+using ROSCA.Application.DTOs.WalletTransactions;
 using ROSCA.Application.Interfaces.Users;
 
 [ApiController]
@@ -58,23 +60,24 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    // will be implemented in the future when we have financial data to return
-    //[HttpGet("{id:int}/financial")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(StatusCodes.Status404NotFound)]
-    //public async Task<IActionResult> GetFinancial(int id)
-    //{
-    //    if (id <= 0)
-    //        return BadRequest("Invalid user ID");
+    // This endpoint is for admin use only, so it can return more sensitive financial data
 
-    //    var user = await _service.GetUserWithFinancialDataAsync(id);
+    [HttpGet("{id:int}/financial")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetFinancial(int id)
+    {
+        if (id <= 0)
+            return BadRequest("Invalid user ID");
 
-    //    if (user == null)
-    //        return NotFound("User not found");
+        var user = await _service.GetUserWithFinancialDataAsync(id);
 
-    //    return Ok(user);
-    //}
+        if (user == null)
+            return NotFound("User not found");
+
+        return Ok(user);
+    }
 
 
     [HttpPost]
@@ -161,13 +164,24 @@ public class UsersController : ControllerBase
             return Unauthorized(new { message = "Invalid username or password." });
         }
 
-        return Ok(new
+        var response = new UserDTO
         {
             Id = user.Id,
             FullName = user.FullName,
             Username = user.Username,
-            Level = user.Profile?.Level ?? "New Member",
-            RawScore = user.Profile?.RawScore ?? 0
-        });
+            NationalId = user.NationalId,
+            BankAccount = user.BankAccount,
+            CreatedAt = user.CreatedAt,
+            Profile = user.Profile != null ? new IntegrityProfileDTO
+            {
+                Level = user.Profile.Level,
+                RawScore = user.Profile.RawScore
+            } : null,
+            // Mapping lists
+            Memberships = user.Memberships.Select(m => new FundMemberDTO { /* map properties */ }).ToList(),
+            Transactions = user.Transactions.Select(t => new WalletTransactionDTO { /* map properties */ }).ToList()
+        };
+
+        return Ok(response);
     }
 }

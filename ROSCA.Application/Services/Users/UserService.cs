@@ -95,7 +95,7 @@ public class UserService : IUserService
             // 4. Map Wallet Transactions (Payment History)
             Transactions = user.Transactions.Select(t => new WalletTransactionDTO
             {
-                Id = t.Id,
+                TransactionId= t.Id,
                 WalletId = t.WalletId,
                 UserId = t.UserId,
                 PayoutId = t.PayoutId,
@@ -104,18 +104,7 @@ public class UserService : IUserService
                 PaymentDate = t.PaymentDate
             }).OrderByDescending(t => t.PaymentDate).ToList(), // Clean History: Newest first
 
-            // 5. Map Payouts (Scheduled/Received Funds)
-            Payouts = user.Payouts.Select(p => new PayoutDTO
-            {
-                Id = p.Id,
-                RoundNumber = p.RoundNumber,
-                PayoutOrderInRound = p.PayoutOrderInRound,
-                Amount = p.Amount,
-                DueDate = p.DueDate,
-                CollectionDate = p.CollectionDate,
-                Status = p.Status,
-                CreatedAt = p.CreatedAt
-            }).OrderBy(p => p.DueDate).ToList() // Scheduled: Oldest/Next due first
+     
         };
     }
 

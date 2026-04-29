@@ -76,10 +76,17 @@ namespace ROSCA.Infrastructure.Repositories.Wallets
         {
             var Wallet = await _Context.Wallets.FindAsync(WalletId);
 
-            if (Wallet == null || Wallet.Balance < Amount)
-                return false; //wallet is not found or balance is not sufficient
+            if (Wallet == null)
+                return false; //wallet is not found
 
-            Wallet.Balance -= Amount;
+            //TODO Edge case to be solved: if the Balance is smaller than Payout Amount
+            if (Wallet.Balance < Amount)
+                Wallet.Balance = 0;
+            else
+                Wallet.Balance -= Amount;
+
+            //TODO: Payout amount should be sent to user Account
+
             return await _Context.SaveChangesAsync() != 0;
         }
     }

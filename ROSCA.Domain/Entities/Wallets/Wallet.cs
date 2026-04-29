@@ -11,8 +11,8 @@ namespace ROSCA.Domain.Entities.Wallets
         public int CurrencyId { get; set; }
         public decimal Balance { get; set; }
 
-        public virtual Fund Fund { get; set; } = new Fund();
-        public virtual Currency Currency { get; set; } = new Currency();
-        public virtual ICollection<WalletTransaction> Transactions { get; set; } = new List<WalletTransaction>();
+        public virtual Fund Fund { get; set; } = null!;
+        public virtual Currency Currency { get; set; } = null!;
+        public virtual ICollection<WalletTransaction> Transactions { get; set; } = null!;
     }
 }

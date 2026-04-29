@@ -164,24 +164,7 @@ public class UsersController : ControllerBase
             return Unauthorized(new { message = "Invalid username or password." });
         }
 
-        var response = new UserDTO
-        {
-            Id = user.Id,
-            FullName = user.FullName,
-            Username = user.Username,
-            NationalId = user.NationalId,
-            BankAccount = user.BankAccount,
-            CreatedAt = user.CreatedAt,
-            Profile = user.Profile != null ? new IntegrityProfileDTO
-            {
-                Level = user.Profile.Level,
-                RawScore = user.Profile.RawScore
-            } : null,
-            // Mapping lists
-            Memberships = user.Memberships.Select(m => new FundMemberDTO { /* map properties */ }).ToList(),
-            Transactions = user.Transactions.Select(t => new WalletTransactionDTO { /* map properties */ }).ToList()
-        };
 
-        return Ok(response);
+        return Ok(user);
     }
 }

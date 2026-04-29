@@ -169,8 +169,31 @@ public class UserService : IUserService
             NationalId = user.NationalId,
             BankAccount = user.BankAccount,
             CreatedAt = user.CreatedAt,
-            Profile = MapProfile(user.Profile)
+            Profile = MapProfile(user.Profile),
+ 
+            Memberships = user.Memberships.Select(m => new FundMemberDTO
+            {
+                Id = m.Id,
+                UserId = m.UserId,
+                FundId = m.FundId,
+                PayoutOrder = m.PayoutOrder,
+                CreatedAt = m.CreatedAt
+            }).ToList(),
+
+            // 4. Map Wallet Transactions (Payment History)
+            Transactions = user.Transactions.Select(t => new WalletTransactionDTO
+            {
+                TransactionId = t.Id,
+                WalletId = t.WalletId,
+                UserId = t.UserId,
+                PayoutId = t.PayoutId,
+                Amount = t.Amount,
+                Type = t.Type,
+                PaymentDate = t.PaymentDate
+            }).OrderByDescending(t => t.PaymentDate).ToList(), // Clean History: Newest first
+
         };
+
     }
 
     private IntegrityProfileDTO MapProfile(IntegrityProfile profile)

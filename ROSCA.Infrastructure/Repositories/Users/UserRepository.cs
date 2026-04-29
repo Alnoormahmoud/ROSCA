@@ -16,6 +16,10 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Profile) // Added: Get score when looking up by ID
+            .Include(u => u.Memberships)
+                .ThenInclude(fm => fm.Fund) // Added: Get fund details for user profile views
+                            .Include(u => u.Transactions)
+
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
@@ -30,6 +34,9 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Profile) // Added: Get score during login/auth lookups
+             .Include(u => u.Memberships)
+                .ThenInclude(fm => fm.Fund)
+            .Include(u => u.Transactions)
             .FirstOrDefaultAsync(u => u.Username == username);
     }
 
@@ -41,13 +48,6 @@ public class UserRepository : IUserRepository
                 .ThenInclude(fm => fm.Fund)
             .Include(u => u.Transactions)
              .FirstOrDefaultAsync(u => u.Id == userId);
-    }
-
-    public async Task<User?> GetUserWithProfileAsync(int userId)
-    {
-        return await _context.Users
-            .Include(u => u.Profile)
-            .FirstOrDefaultAsync(u => u.Id == userId);
     }
 
     // --- Write Operations (Profile is read-only from the view, so no changes needed here) ---

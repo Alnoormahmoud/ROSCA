@@ -15,13 +15,13 @@ namespace ROSCA.API.Controllers.Wallets
         {
             _WalletService = WalletService;
         }
-        //[HttpGet("GetAll")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //public async Task<ActionResult<IEnumerable<WalletDTO>>> GetAllWallets()
-        //{
-        //   var result = await _WalletService.GetAllAsync();
-        //    return Ok(result);
-        //}
+        [HttpGet("GetAll")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<WalletDTO>>> GetAllWallets()
+        {
+            var result = await _WalletService.GetAllAsync();
+            return Ok(result);
+        }
 
         [HttpGet("GetByWalletId/{WalletId}", Name ="GetWalletById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -46,29 +46,6 @@ namespace ROSCA.API.Controllers.Wallets
                  NotFound("لم يتم العثور على المحفظة")
                  : Ok(result);
         }
-
-
-
-        //[HttpPost("AddNew")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public async Task<ActionResult<WalletDTO>> Add(WalletToAddDTO wallet)
-        //{
-        //    var NewId = await _WalletService.AddAsync(wallet);
-        //    if (NewId is null)
-        //    {
-        //        return BadRequest("البيانات المدخلة غير صحيحة");
-        //    }
-
-        //    var Created = await _WalletService.GetByIdAsync((int)NewId);
-
-        //    return Created is null ?
-        //        Problem("حدثت مشكلة عند الاتصال بالخادم")
-        //        : CreatedAtRoute("GetByWalletId", new { id = NewId }, Created);
-        //}
-
-       
 
         [HttpGet("AllCurrencies")]
         [ProducesResponseType(StatusCodes.Status200OK)]

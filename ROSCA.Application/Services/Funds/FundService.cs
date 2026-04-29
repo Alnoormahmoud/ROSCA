@@ -36,6 +36,16 @@ namespace ROSCA.Application.Services.Funds
                 : MapToDTO(fund);
         }
 
+        public async Task<IEnumerable<FundDTO>> GetByUserIdAsync(int userId)
+        {
+            var funds = await _repo
+                .GetByUserIdAsync(userId);
+
+            return funds
+                .Select(f => MapToDTO(f))
+                .ToList();
+        }
+
         public FundService(IFundRepository repo, IPayoutRepository payoutRepo, IFundMemberRepository memberRepo, IFundMemberService memberService, IPayoutService payoutService, IWalletService walletService)
         {
             _repo = repo;

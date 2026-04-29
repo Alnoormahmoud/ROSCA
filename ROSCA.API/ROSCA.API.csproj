@@ -7,15 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\FundMembers\**" />
+    <Compile Remove="Controllers\Payouts\**" />
+    <Content Remove="Controllers\FundMembers\**" />
+    <Content Remove="Controllers\Payouts\**" />
+    <EmbeddedResource Remove="Controllers\FundMembers\**" />
+    <EmbeddedResource Remove="Controllers\Payouts\**" />
+    <None Remove="Controllers\FundMembers\**" />
+    <None Remove="Controllers\Payouts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\FundMembers\" />
     <Folder Include="Controllers\WalletTransactions\" />
     <Folder Include="Controllers\Wallets\" />
-    <Folder Include="Controllers\Payouts\" />
   </ItemGroup>
 
   <ItemGroup>

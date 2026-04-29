@@ -37,9 +37,22 @@ namespace ROSCA.Infrastructure.Repositories.Funds
                     .ThenInclude(w => w.Transactions)
                 .Include(f => f.Admin)
                 .Include(f => f.Members)
-                .Include(f => f.Members)
                     .ThenInclude(m => m.Payouts)
                 .FirstOrDefault(f => f.Id == id);
+        }
+
+        public async Task<IEnumerable<Fund>> GetByUserIdAsync(int userId)
+        {
+            return await _context.Funds
+                .Include(f => f.Wallet)
+                    .ThenInclude(w => w.Currency)
+                .Include(f => f.Wallet)
+                    .ThenInclude(w => w.Transactions)
+                .Include(f => f.Admin)
+                .Include(f => f.Members)
+                    .ThenInclude(m => m.Payouts)
+                .Where(f => f.AdminId == userId || f.Members.Any(m => m.UserId == userId))
+                .ToListAsync();
         }
 
         public async Task<int> AddAsync(Fund fund)

@@ -7,6 +7,7 @@ namespace ROSCA.Application.Interfaces.Funds
     public interface IFundService
     {
         Task<FundDTO?> GetByIdAsync(int id);
+        Task<IEnumerable<FundDTO>> GetByUserIdAsync(int userId);
         Task<int> CreateFundAsync(FundToAddDTO dto);
         Task<bool> GenerateNewRoundAsync(FundToUpdateDTO dto);
         Task<bool> CompleteFundAsync(int fundId);

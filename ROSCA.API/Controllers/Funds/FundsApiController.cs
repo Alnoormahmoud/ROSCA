@@ -135,5 +135,15 @@ namespace ROSCA.API.Controllers.Funds
                 : Ok(fund);
         }
 
+        [HttpGet("GetByUserId/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<FundDTO>>> GetByUserId(int userId)
+        {
+            var funds = await _fundService
+                .GetByUserIdAsync(userId);
+
+            return Ok(funds);
+        }
+
     }
 }

@@ -17,7 +17,8 @@ namespace ROSCA.Domain.Entities.Payouts
         public PayoutStatus Status { get; set; } = PayoutStatus.Disbursed;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual FundMember Member { get; set; } = new FundMember();
+        public virtual FundMember Member { get; set; } = null!;
+
         public virtual ICollection<WalletTransaction> Transactions { get; set; } = new List<WalletTransaction>();
     }
 }

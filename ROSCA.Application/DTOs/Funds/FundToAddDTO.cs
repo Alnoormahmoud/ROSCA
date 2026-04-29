@@ -7,6 +7,7 @@ namespace ROSCA.Application.DTOs.Funds
     public class FundToAddDTO
     {
         public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int AdminId { get; set; }
         public int CurrencyId { get; set; }
         public decimal ShareValue { get; set; }

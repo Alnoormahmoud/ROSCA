@@ -13,8 +13,8 @@ namespace ROSCA.Domain.Entities.FundMembers
         public int PayoutOrder { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual User User { get; set; } = new User();
-        public virtual Fund Fund { get; set; } = new Fund();
+        public virtual User User { get; set; } = null!;
+        public virtual Fund Fund { get; set; } = null!;
 
         public virtual ICollection<Payout> Payouts { get; set; } = new List<Payout>();
     }

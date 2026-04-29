@@ -19,6 +19,9 @@ namespace ROSCA.Infrastructure.Repositories.Funds
         {
             return await _context.Funds
                 .Include(f => f.Wallet)
+                    .ThenInclude(w => w.Currency)
+                .Include(f => f.Wallet)
+                    .ThenInclude(w => w.Transactions)
                 .Include(f => f.Admin)
                 .Include(f => f.Members)
                     .ThenInclude(m => m.Payouts)
@@ -29,6 +32,9 @@ namespace ROSCA.Infrastructure.Repositories.Funds
         {
             return _context.Funds
                 .Include(f => f.Wallet)
+                    .ThenInclude(w => w.Currency)
+                .Include(f => f.Wallet)
+                    .ThenInclude(w => w.Transactions)
                 .Include(f => f.Admin)
                 .Include(f => f.Members)
                 .Include(f => f.Members)

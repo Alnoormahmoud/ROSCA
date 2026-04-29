@@ -54,7 +54,7 @@ namespace ROSCA.API.Controllers.Funds
                 .CreateFundAsync(fundToAdd);
 
             if (newFundId == -1)
-                return Problem("فشل إنشاء الصندوق، يرجى التحقق من صحة المعرفات (AdminId/UserId)");
+                Problem("حدثت مشكلة عند الاتصال بالخادم");
 
             var createdFund = await _fundService
                 .GetByIdAsync(newFundId);
@@ -77,6 +77,9 @@ namespace ROSCA.API.Controllers.Funds
 
             if (fundUpdate.Id < 1 || originalFund is null)
                 return BadRequest("معرف الصندوق غير صحيح");
+            
+            if (originalFund.Status != Domain.Enums.Funds.FundStatus.Completed)
+                return BadRequest("يجب أن يكون الصندوق قد إكتمل قبل البدأ في جولة جديدة");
 
             if (fundUpdate.ShareValue <= 0)
                 return BadRequest("قيمة السهم الجديدة يجب أن تكون أكبر من صفر");

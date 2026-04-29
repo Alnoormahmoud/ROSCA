@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Transactions;
 using ROSCA.Application.DTOs.FundMembers;
 using ROSCA.Application.DTOs.Funds;
@@ -64,6 +63,7 @@ namespace ROSCA.Application.Services.Funds
                     {
                         Title = dto.Title,
                         AdminId = dto.AdminId,
+                        Description = dto.Description,
                         ShareValue = dto.ShareValue,
                         PeriodType = dto.PeriodType,
                         TotalMembers = dto.Members.Count,
@@ -100,7 +100,7 @@ namespace ROSCA.Application.Services.Funds
                         var payout = new Payout
                         {
                             FundMemberId = fundMember.Id,
-                            RoundNumber = 1,
+                            RoundNumber = fund.CurrentRoundNumber,
                             PayoutOrderInRound = fundMember.PayoutOrder,
                             Amount = fund.ShareValue * (dto.Members.Count - 1),
                             DueDate = GetDueDate(fund, fundMember.PayoutOrder).Date,
@@ -201,6 +201,7 @@ namespace ROSCA.Application.Services.Funds
                 try
                 {
                     fund.Title = dto.Title;
+                    fund.Description = dto.Description; 
                     fund.ShareValue = dto.ShareValue;
                     fund.PeriodType = dto.PeriodType;
                     fund.StartDate = dto.StartDate.Date;
@@ -252,9 +253,9 @@ namespace ROSCA.Application.Services.Funds
 
             return fund.PeriodType switch
             {
-                PeriodType.Daily => fund.StartDate.AddDays(offset),
-                PeriodType.Weekly => fund.StartDate.AddDays(offset * 7),
-                PeriodType.Monthly => fund.StartDate.AddMonths(offset),
+                PeriodType.Daily => fund.StartDate.AddDays(offset + 1),
+                PeriodType.Weekly => fund.StartDate.AddDays((offset * 7) + 7),
+                PeriodType.Monthly => fund.StartDate.AddMonths(offset + 1),
                 _ => throw new InvalidEnumArgumentException()
             };
         }
@@ -275,6 +276,9 @@ namespace ROSCA.Application.Services.Funds
             {
                 Id = fund.Id,
                 Title = fund.Title,
+                Description = fund.Description,
+                AdminId = fund.AdminId,
+                TotalMembers = fund.TotalMembers,
                 ShareValue = fund.ShareValue,
                 PeriodType = fund.PeriodType,
                 StartDate = fund.StartDate.Date,

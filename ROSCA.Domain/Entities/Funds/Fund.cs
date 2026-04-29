@@ -1,7 +1,6 @@
 ﻿using System;
 using ROSCA.Domain.Entities.Bases;
 using ROSCA.Domain.Entities.FundMembers;
-using ROSCA.Domain.Entities.Payouts;
 using ROSCA.Domain.Entities.Users;
 using ROSCA.Domain.Entities.Wallets;
 using ROSCA.Domain.Enums.Funds;
@@ -12,7 +11,7 @@ namespace ROSCA.Domain.Entities.Funds
     {
         public string Title { get; set; } = string.Empty;
         public int AdminId { get; set; }
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; } = null!;
         public int TotalMembers { get; set; }
         public decimal ShareValue { get; set; }
         public PeriodType PeriodType { get; set; }
@@ -21,8 +20,9 @@ namespace ROSCA.Domain.Entities.Funds
         public int CurrentRoundNumber { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual User Admin { get; set; } = new User();
-        public virtual Wallet Wallet { get; set; } = new Wallet();
+        public virtual User Admin { get; set; } = null!;
+        public virtual Wallet Wallet { get; set; } = null!;
+
         public virtual ICollection<FundMember> Members { get; set; } = new List<FundMember>();
     }
 }

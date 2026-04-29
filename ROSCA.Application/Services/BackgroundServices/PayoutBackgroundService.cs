@@ -48,7 +48,6 @@ namespace ROSCA.Application.Services.BackgroundServices
                         var TransactionDTO = new PayoutTransactionToAddDTO()
                         {
                             WalletId = payout.Member.Fund.Wallet.Id,
-                            UserId = payout.Member.UserId,
                             PayoutId = payout.Id,
                         };
 

@@ -11,7 +11,7 @@ namespace ROSCA.Application.DTOs.WalletTransactions
     {
         public int TransactionId {  get; set; }
         public int WalletId { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public int PayoutId { get; set; }
 
         public decimal Amount { get; set; }

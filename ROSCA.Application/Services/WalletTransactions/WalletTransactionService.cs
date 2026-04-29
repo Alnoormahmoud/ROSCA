@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using ROSCA.Application.DTOs.WalletTransactions;
+using ROSCA.Application.Interfaces.Payouts;
 using ROSCA.Application.Interfaces.Wallets;
 using ROSCA.Application.Interfaces.WalletTransactions;
 using ROSCA.Domain.Entities.WalletTransactions;
@@ -15,10 +16,12 @@ namespace ROSCA.Application.Services.WalletTransactions
     {
         private readonly IWalletTransactionRepository _TransactionRepo;
         private IWalletService _WalletService;
-        public WalletTransactionService(IWalletTransactionRepository Repo, IWalletService walletService)
+        private IPayoutRepository _PayoutRepository;
+        public WalletTransactionService(IWalletTransactionRepository Repo, IWalletService walletService, IPayoutRepository payoutRepository)
         {
             _TransactionRepo = Repo;
             _WalletService = walletService;
+            _PayoutRepository = payoutRepository;
         }
 
         public async Task<int?> AddPayoutTransactionAsync(PayoutTransactionToAddDTO dto)
@@ -28,11 +31,15 @@ namespace ROSCA.Application.Services.WalletTransactions
             if (Wallet == null) 
                 return null; //wallet is not found
 
+            var Payout = await _PayoutRepository.GetByIdAsync(dto.PayoutId);
+            if (Payout == null)
+                return null; //Payout is not found
+
             var WalletTransaction = new WalletTransaction();
             WalletTransaction.WalletId = dto.WalletId;
-            WalletTransaction.UserId = dto.UserId;
+            WalletTransaction.UserId = null;
             WalletTransaction.PayoutId = dto.PayoutId;
-            WalletTransaction.Amount = Wallet.Balance;
+            WalletTransaction.Amount = Payout.Amount;
             WalletTransaction.Type = Domain.Enums.WalletTransactions.TransactionType.Payout;
             WalletTransaction.PaymentDate = DateTime.Now;
 
@@ -42,7 +49,7 @@ namespace ROSCA.Application.Services.WalletTransactions
                 {
                     NewID = await _TransactionRepo.Add(WalletTransaction);
 
-                    await _WalletService.PayPayoutAsync(WalletTransaction.WalletId);
+                    await _WalletService.PayPayoutAsync(WalletTransaction.WalletId, Payout.Amount);
 
                     transactionScope.Complete();
                 }
@@ -58,11 +65,15 @@ namespace ROSCA.Application.Services.WalletTransactions
         public async Task<int?> AddContributionTransactionAsync(ContributionToAddDTO dto)
         {
             int? NewID = null;
+
+            var Payout = await _PayoutRepository.GetByIdAsync(dto.PayoutId);
+            if (Payout == null) return null;    
+
             var WalletTransaction = new WalletTransaction();
-            WalletTransaction.WalletId = dto.WalletId;
+            WalletTransaction.WalletId = Payout.Member.Fund.Wallet.Id;
             WalletTransaction.UserId = dto.UserId;
             WalletTransaction.PayoutId = dto.PayoutId;
-            WalletTransaction.Amount = dto.Amount;
+            WalletTransaction.Amount = Payout.Member.Fund.ShareValue;
             WalletTransaction.Type = Domain.Enums.WalletTransactions.TransactionType.Contribution;
             WalletTransaction.PaymentDate = DateTime.Now;
 

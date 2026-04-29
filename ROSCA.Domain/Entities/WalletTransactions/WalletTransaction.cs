@@ -10,7 +10,7 @@ namespace ROSCA.Domain.Entities.WalletTransactions
     public class WalletTransaction : BaseEntity
     {
         public int WalletId { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public int PayoutId { get; set; }
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }

@@ -56,9 +56,9 @@ namespace ROSCA.Application.Services.Wallets
         }
   
 
-        public async Task<bool> PayPayoutAsync(int WalletId)
+        public async Task<bool> PayPayoutAsync(int WalletId, decimal Amount)
         {
-            return await _Repo.WithdrawPayoutAsync(WalletId);
+            return await _Repo.WithdrawPayoutAsync(WalletId, Amount);
         }
 
         public async Task<IEnumerable<string>> GetAllCurrenciesCodesAsync()

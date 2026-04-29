@@ -9,7 +9,6 @@ namespace ROSCA.Application.DTOs.WalletTransactions
     public class PayoutTransactionToAddDTO
     {
         public int WalletId { get; set; }
-        public int UserId { get; set; }
         public int PayoutId { get; set; }
     }
 }

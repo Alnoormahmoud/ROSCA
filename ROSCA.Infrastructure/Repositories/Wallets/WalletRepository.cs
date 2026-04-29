@@ -72,17 +72,14 @@ namespace ROSCA.Infrastructure.Repositories.Wallets
 
         }
 
-        public async Task<bool> WithdrawPayoutAsync(int WalletId)
+        public async Task<bool> WithdrawPayoutAsync(int WalletId, decimal Amount)
         {
             var Wallet = await _Context.Wallets.FindAsync(WalletId);
 
-            if (Wallet == null)
-                return false; //wallet is not found
+            if (Wallet == null || Wallet.Balance < Amount)
+                return false; //wallet is not found or balance is not sufficient
 
-            decimal PayoutAmount = Wallet.Balance;
-            //TODO: Here we should send payout to user
-
-            Wallet.Balance = 0;
+            Wallet.Balance -= Amount;
             return await _Context.SaveChangesAsync() != 0;
         }
     }

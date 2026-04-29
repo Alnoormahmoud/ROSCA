@@ -16,8 +16,8 @@ namespace ROSCA.Domain.Entities.WalletTransactions
         public TransactionType Type { get; set; }
         public DateTime PaymentDate { get; set; } = DateTime.Now;
 
-        public virtual Wallet Wallet { get; set; } = new Wallet();
-        public virtual User User { get; set; } = new User();
-        public virtual Payout Payout { get; set; } = new Payout();
+        public virtual Wallet Wallet { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
+        public virtual Payout Payout { get; set; } = null!;
     }
 }

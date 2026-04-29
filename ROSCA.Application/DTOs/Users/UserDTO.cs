@@ -24,10 +24,7 @@ namespace ROSCA.Application.DTOs.Users
  
         public IntegrityProfileDTO? Profile { get; set; }
 
-
-        // Navigation(flattened or summarized) they will be included later to avoid circular references and over - fetching.For now, we can just include counts or summaries.
         public List<FundMemberDTO> Memberships { get; set; } = new();
         public List<WalletTransactionDTO> Transactions { get; set; } = new();
-        public List<PayoutDTO> Payouts { get; set; } = new();
-    }
+     }
 }

@@ -49,11 +49,7 @@ namespace ROSCA.Infrastructure.Persistence
                 .HasForeignKey<IntegrityProfile>(p => p.UserId) // Use the existing UserId
                 .IsRequired(false); // Since it's a View, it might be null if no data exists
 
-            modelBuilder.Entity<Fund>()
-                .HasOne(f => f.Admin)
-                .WithMany(u => u.ManagedFunds)
-                .HasForeignKey(f => f.AdminId)
-                .OnDelete(DeleteBehavior.Restrict);
+ 
         }
     }
 }

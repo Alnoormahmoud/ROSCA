@@ -23,7 +23,6 @@ namespace ROSCA.Domain.Entities.Users
        
         public virtual ICollection<FundMember> Memberships { get; set; } = new List<FundMember>();
         public virtual ICollection<WalletTransaction> Transactions { get; set; } = new List<WalletTransaction>();
-        public virtual ICollection<Payout> Payouts { get; set; } = new List<Payout>();
-    }
+     }
 
 }

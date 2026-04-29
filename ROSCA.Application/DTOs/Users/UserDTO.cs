@@ -24,7 +24,7 @@ namespace ROSCA.Application.DTOs.Users
  
         public IntegrityProfileDTO? Profile { get; set; }
 
-        public List<FundMemberDTO> Memberships { get; set; } = new();
-        public List<WalletTransactionDTO> Transactions { get; set; } = new();
-     }
+        public List<FundMemberDTO> Memberships { get; set; } = null !;
+        public List<WalletTransactionDTO> Transactions { get; set; } = null !;
+    }
 }

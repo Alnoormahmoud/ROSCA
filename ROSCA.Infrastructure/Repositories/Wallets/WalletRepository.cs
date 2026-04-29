@@ -31,6 +31,7 @@ namespace ROSCA.Infrastructure.Repositories.Wallets
             return await _Context.Wallets
                  .Include(x => x.Fund)
                  .Include(x => x.Currency)
+                 .Include(x => x.Transactions)
                  .ToListAsync();
         }
 
@@ -44,6 +45,7 @@ namespace ROSCA.Infrastructure.Repositories.Wallets
             return await _Context.Wallets
                    .Include(x => x.Fund)
                    .Include(x => x.Currency)
+                   .Include(x => x.Transactions)
                    .FirstOrDefaultAsync(x => x.FundId == FundId);
         }
 
@@ -52,21 +54,36 @@ namespace ROSCA.Infrastructure.Repositories.Wallets
             return await _Context.Wallets
                    .Include(x => x.Fund)
                    .Include(x => x.Currency)
+                   .Include(x=>x.Transactions)
                    .FirstOrDefaultAsync(x => x.Id == Id);
         }
 
-        public async Task<bool> UpdateBalanceAsync(int WalletId, decimal NewBalance)
+        public async Task<bool> DepositAsync(int WalletId, decimal Amount)
         {
            var Wallet = await _Context.Wallets.FindAsync(WalletId);
 
             if (Wallet == null)
                 return false; //wallet is not found
 
-            Wallet.Balance = NewBalance;
+            Wallet.Balance += Amount;
 
             return await _Context.SaveChangesAsync() != 0;
 
 
+        }
+
+        public async Task<bool> WithdrawPayoutAsync(int WalletId)
+        {
+            var Wallet = await _Context.Wallets.FindAsync(WalletId);
+
+            if (Wallet == null)
+                return false; //wallet is not found
+
+            decimal PayoutAmount = Wallet.Balance;
+            //TODO: Here we should send payout to user
+
+            Wallet.Balance = 0;
+            return await _Context.SaveChangesAsync() != 0;
         }
     }
 }

@@ -20,6 +20,7 @@ namespace ROSCA.Infrastructure.Repositories.Payouts
             return await _context.Payouts
                 .Include(p => p.Member)
                     .ThenInclude(m => m.Fund)
+                    .ThenInclude(f => f.Wallet)
                 .Include(p => p.Transactions)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
